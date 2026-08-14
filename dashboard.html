@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>College ERP Dashboard</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="responsive.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+
+        <div class="sidebar">
+
+            <h2>College ERP</h2>
+
+            <ul>
+
+                <li class="active">
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="students.html">
+                        <i class="fas fa-user-graduate"></i>
+                        Students
+                    </a>
+                </li>
+
+                <li>
+                    <a href="teachers.html">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Teachers
+                    </a>
+                </li>
+
+                <li>
+                    <a href="attendance.html">
+                        <i class="fas fa-calendar-check"></i>
+                        Attendance
+                    </a>
+                </li>
+
+                <li>
+                    <a href="fees.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Fees
+                    </a>
+                </li>
+
+                <li>
+                    <a href="results.html">
+                        <i class="fas fa-chart-line"></i>
+                        Results
+                    </a>
+                </li>
+
+                <li>
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+
+                </li>
+                <li>
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-right-from-bracket"></i>
+                        Logout
+                    </a>
+                </li>
+  
+
+            </ul>
+
+        </div>
+
+        <!-- Main Content -->
+
+        <div class="main">
+
+            <!-- Header -->
+
+            <div class="header">
+
+                <h1>Dashboard</h1>
+
+                <div class="admin">
+                    Welcome, To ABHISHEK PAL
+                </div>
+
+            </div>
+
+            <!-- Cards -->
+
+            <div class="cards">
+
+                <div class="card">
+                    <i class="fas fa-user-graduate icon"></i>
+                    <h3>Total Students</h3>
+                    <h2 id="totalStudentsCard">0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-chalkboard-teacher icon"></i>
+                    <h3>Total Teachers</h3>
+                    <h2 id="teacherCard">0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-calendar-check icon"></i>
+                    <h3>Attendance</h3>
+                    <h2 id="attendanceCard">0%</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-money-bill-wave icon"></i>
+                    <h3>Fees Collected</h3>
+                    <h2 id="feesCard">₹0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fas fa-chart-line icon"></i>
+                    <h3>Total Results</h3>
+                    <h2 id="resultCard">0</h2>
+                </div>
+
+            </div>
+
+            <!-- Recent Activity -->
+
+            <div class="activity">
+
+                <h2>Recent Activity</h2>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Today</td>
+                            <td>Student Management Updated</td>
+                            <td>✅ Completed</td>
+                        </tr>
+
+                        <tr>
+                            <td>Today</td>
+                            <td>Teacher Management Updated</td>
+                            <td>✅ Completed</td>
+                        </tr>
+
+                        <tr>
+                            <td>Today</td>
+                            <td>Attendance Module Updated</td>
+                            <td>✅ Completed</td>
+                        </tr>
+
+                        <tr>
+                            <td>Today</td>
+                            <td>Fees Management Updated</td>
+                            <td>✅ Completed</td>
+                        </tr>
+
+                        <tr>
+                            <td>Today</td>
+                            <td>Result Management Updated</td>
+                            <td>✅ Completed</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>

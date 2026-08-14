@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students Management</title>
+
+    <link rel="stylesheet" href="students.css">
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <h1>👨‍🎓 Student Management</h1>
+        <div class="nav-buttons">
+            <a href="dashboard.html" class="back-btn">⬅ Dashboard</a>
+        </div>
+
+
+        <div class="top-section">
+
+
+            <input type="text" id="searchStudent" placeholder="Search Student">
+
+
+            <h2>
+                Total Students:
+                <span id="totalStudents">0</span>
+            </h2>
+
+
+        </div>
+        <form id="studentForm" class="form-box">
+
+            <input type="text" id="studentName" placeholder="Student Name">
+
+            <input type="text" id="rollNo" placeholder="Roll Number">
+
+            <input type="text" id="branch" placeholder="Branch">
+            <button type="submit" id="addBtn">
+                Add Student
+            </button>
+
+
+
+        </form>
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Branch</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody id="studentTable">
+
+
+            </tbody>
+
+
+
+        </table>
+
+
+
+    </div>
+
+
+
+
+    <script src="students.js"></script>
+
+
+</body>
+
+</html>
