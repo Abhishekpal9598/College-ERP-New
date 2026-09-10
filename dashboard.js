@@ -51,82 +51,101 @@ function updateDashboard() {
 
     }
 
-     // =========================
-// Student Attendance Percentage
-// =========================
+ 
+// =======================================
+// STUDENT ATTENDANCE
+// =======================================
 
-const studentAttendanceCard =
-    document.getElementById("studentAttendance");
+function updateStudentAttendance() {
 
-let studentAttendance =
-    JSON.parse(
-        localStorage.getItem("studentAttendance")
-    ) || [];
+    const attendance =
+        JSON.parse(
+            localStorage.getItem("studentAttendance")
+        ) || [];
 
-if (studentAttendanceCard) {
 
-    if (studentAttendance.length > 0) {
+    if (attendance.length === 0) {
 
-        let present =
-            studentAttendance.filter(
-                a => a.status === "Present"
-            ).length;
+        document.getElementById(
+            "studentAttendance"
+        ).textContent = "0%";
 
-        let percentage =
-            Math.round(
-                (present / studentAttendance.length) * 100
-            );
-
-        studentAttendanceCard.textContent =
-            percentage + "%";
-
-    } else {
-
-        studentAttendanceCard.textContent =
-            "0%";
-
+        return;
     }
+
+
+    const present =
+        attendance.filter(
+            record => record.status === "Present"
+        ).length;
+
+
+    const percentage =
+        (present / attendance.length) * 100;
+
+
+    document.getElementById(
+        "studentAttendance"
+    ).textContent =
+        percentage.toFixed(1) + "%";
 
 }
 
 
-// =========================
-// Teacher Attendance Percentage
-// =========================
+// =======================================
+// TEACHER ATTENDANCE
+// =======================================
 
-const teacherAttendanceCard =
-    document.getElementById("teacherAttendance");
+function updateTeacherAttendance() {
 
-let teacherAttendance =
-    JSON.parse(
-        localStorage.getItem("teacherAttendance")
-    ) || [];
+    const attendance =
+        JSON.parse(
+            localStorage.getItem("teacherAttendance")
+        ) || [];
 
-if (teacherAttendanceCard) {
 
-    if (teacherAttendance.length > 0) {
+    if (attendance.length === 0) {
 
-        let present =
-            teacherAttendance.filter(
-                a => a.status === "Present"
-            ).length;
+        document.getElementById(
+            "teacherAttendance"
+        ).textContent = "0%";
 
-        let percentage =
-            Math.round(
-                (present / teacherAttendance.length) * 100
-            );
-
-        teacherAttendanceCard.textContent =
-            percentage + "%";
-
-    } else {
-
-        teacherAttendanceCard.textContent =
-            "0%";
-
+        return;
     }
 
+
+    const present =
+        attendance.filter(
+            record => record.status === "Present"
+        ).length;
+
+
+    const percentage =
+        (present / attendance.length) * 100;
+
+
+    document.getElementById(
+        "teacherAttendance"
+    ).textContent =
+        percentage.toFixed(1) + "%";
+
 }
+
+
+// =======================================
+// UPDATE DASHBOARD
+// =======================================
+
+function updateAttendanceDashboard() {
+
+    updateStudentAttendance();
+
+    updateTeacherAttendance();
+
+}
+
+
+updateAttendanceDashboard();
 
     // =========================
     // Fees Collection
@@ -179,8 +198,7 @@ updateDashboard();
 // =========================
 // Logout
 // =========================
- // =========================
-// Logout
+ 
 // =========================
 
 function logout() {

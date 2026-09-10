@@ -1,48 +1,60 @@
-console.log("Students Page Loaded");
+ // ===============================
+// STUDENT MANAGEMENT
+// ===============================
 
-// ==========================
-// Variables
-// ==========================
+console.log("Student Management Loaded");
 
-let students = JSON.parse(localStorage.getItem("students")) || [];
 
-const studentForm = document.getElementById("studentForm");
-const studentName = document.getElementById("studentName");
-const rollNo = document.getElementById("rollNo");
-const branch = document.getElementById("branch");
+// ===============================
+// VARIABLES
+// ===============================
 
-const table = document.getElementById("studentTable");
-const totalStudents = document.getElementById("totalStudents");
-const addBtn = document.getElementById("addBtn");
-const searchInput = document.getElementById("searchStudent");
+let students =
+    JSON.parse(localStorage.getItem("students")) || [];
 
 let editIndex = -1;
 
-// ==========================
-// Save Students
-// ==========================
+const studentForm =
+    document.getElementById("studentForm");
 
-function saveStudents() {
-    localStorage.setItem("students", JSON.stringify(students));
-}
+const studentName =
+    document.getElementById("studentName");
 
-// ==========================
-// Display Students
-// ==========================
+const rollNo =
+    document.getElementById("rollNo");
 
- function displayStudents(data = students) {
+const branch =
+    document.getElementById("branch");
 
-    table.innerHTML = "";
+const studentTable =
+    document.getElementById("studentTable");
 
-    data.forEach((student, index) => {
+const totalStudents =
+    document.getElementById("totalStudents");
 
-        table.innerHTML += `
+const searchStudent =
+    document.getElementById("searchStudent");
 
-        <tr>
 
-            <td>${student.roll}</td>
+// ===============================
+// DISPLAY STUDENTS
+// ===============================
+
+function displayStudents(studentList = students) {
+
+    studentTable.innerHTML = "";
+
+    studentList.forEach((student, index) => {
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+
+            <td>${index + 1}</td>
 
             <td>${student.name}</td>
+
+            <td>${student.rollNo}</td>
 
             <td>${student.branch}</td>
 
@@ -50,140 +62,235 @@ function saveStudents() {
 
                 <button
                     class="edit-btn"
-                    onclick="editStudent(${index})">
+                    onclick="editStudent(${index})"
+                >
                     Edit
                 </button>
 
                 <button
                     class="delete-btn"
-                    onclick="deleteStudent(${index})">
+                    onclick="deleteStudent(${index})"
+                >
                     Delete
                 </button>
 
             </td>
-
-        </tr>
-
         `;
+
+        studentTable.appendChild(row);
 
     });
 
-    totalStudents.textContent = data.length;
-
+    updateTotalStudents();
 }
 
-displayStudents();
 
-// ==========================
-// Add / Update Student
-// ==========================
+// ===============================
+// UPDATE TOTAL
+// ===============================
 
-studentForm.addEventListener("submit", function (e) {
+function updateTotalStudents() {
 
-    e.preventDefault();
+    totalStudents.textContent =
+        students.length;
+}
 
-    const name = studentName.value.trim();
-    const roll = rollNo.value.trim();
-    const branchName = branch.value.trim();
 
-    if (name === "" || roll === "" || branchName === "") {
-        alert("Please fill all fields.");
-        return;
-    }
+// ===============================
+// ADD / UPDATE STUDENT
+// ===============================
 
-    if (editIndex === -1) {
+studentForm.addEventListener(
+    "submit",
+    function (event) {
 
-        const exists = students.some(student => student.roll === roll);
+        event.preventDefault();
 
-        if (exists) {
-            alert("Roll Number already exists.");
+        const name =
+            studentName.value.trim();
+
+        const roll =
+            rollNo.value.trim();
+
+        const branchValue =
+            branch.value.trim();
+
+
+        // Validation
+
+        if (
+            name === "" ||
+            roll === "" ||
+            branchValue === ""
+        ) {
+
+            alert("Please fill all fields.");
+
             return;
         }
 
-        students.push({
-            roll: roll,
+
+        const studentData = {
+
             name: name,
-            branch: branchName
-        });
 
-        alert("Student Added Successfully.");
+            rollNo: roll,
 
-    } else {
+            branch: branchValue
 
-        students[editIndex] = {
-            roll: roll,
-            name: name,
-            branch: branchName
         };
 
-        editIndex = -1;
-        addBtn.textContent = "Add Student";
 
-        alert("Student Updated Successfully.");
+        // UPDATE
+
+        if (editIndex !== -1) {
+
+            students[editIndex] =
+                studentData;
+
+            editIndex = -1;
+
+            studentForm.querySelector(
+                "button"
+            ).textContent = "Add Student";
+
+        }
+
+        // ADD
+
+        else {
+
+            students.push(studentData);
+
+        }
+
+
+        // Save
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        // Reset
+
+        studentForm.reset();
+
+
+        // Display
+
+        displayStudents();
+
     }
+);
 
-    saveStudents();
-    displayStudents();
 
-    studentForm.reset();
-});
-
-// ==========================
-// Edit Student
-// ==========================
+// ===============================
+// EDIT STUDENT
+// ===============================
 
 function editStudent(index) {
 
-    studentName.value = students[index].name;
-    rollNo.value = students[index].roll;
-    branch.value = students[index].branch;
+    const student =
+        students[index];
+
+    studentName.value =
+        student.name;
+
+    rollNo.value =
+        student.rollNo;
+
+    branch.value =
+        student.branch;
 
     editIndex = index;
 
-    addBtn.textContent = "Update Student";
+    studentForm.querySelector(
+        "button"
+    ).textContent = "Update Student";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
-// ==========================
-// Delete Student
-// ==========================
+
+// ===============================
+// DELETE STUDENT
+// ===============================
 
 function deleteStudent(index) {
 
-    if (confirm("Are you sure you want to delete this student?")) {
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this student?"
+        );
 
-        students.splice(index, 1);
-
-        saveStudents();
-        displayStudents();
-
-        alert("Student Deleted Successfully.");
+    if (!confirmDelete) {
+        return;
     }
+
+
+    students.splice(index, 1);
+
+
+    localStorage.setItem(
+        "students",
+        JSON.stringify(students)
+    );
+
+
+    displayStudents();
+
 }
 
-// ==========================
-// Search Student
-// ==========================
 
-searchInput.addEventListener("keyup", function () {
+// ===============================
+// SEARCH STUDENT
+// ===============================
 
-    const value = this.value.toLowerCase();
+searchStudent.addEventListener(
+    "input",
+    function () {
 
-    const rows = table.getElementsByTagName("tr");
+        const searchValue =
+            searchStudent.value
+                .toLowerCase()
+                .trim();
 
-    for (let row of rows) {
 
-        const roll = row.cells[0].textContent.toLowerCase();
-        const name = row.cells[1].textContent.toLowerCase();
-        const branchValue = row.cells[2].textContent.toLowerCase();
+        const filteredStudents =
+            students.filter(student =>
 
-        if (
-            roll.includes(value) ||
-            name.includes(value) ||
-            branchValue.includes(value)
-        ) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+                student.name
+                    .toLowerCase()
+                    .includes(searchValue)
+
+                ||
+
+                student.rollNo
+                    .toLowerCase()
+                    .includes(searchValue)
+
+                ||
+
+                student.branch
+                    .toLowerCase()
+                    .includes(searchValue)
+
+            );
+
+
+        displayStudents(filteredStudents);
+
     }
-});
+);
+
+
+// ===============================
+// INITIAL LOAD
+// ===============================
+
+displayStudents();

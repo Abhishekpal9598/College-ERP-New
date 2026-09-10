@@ -1,42 +1,153 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Fees Management</title>
+
     <link rel="stylesheet" href="fees.css">
+
 </head>
 
 <body>
+
     <div class="container">
-        <h1>💰 Fees Management</h1> <!-- Fee Form -->
-        <div class="fee-form"> <select id="studentSelect">
-                <option value="">Select Student</option>
-            </select> <input type="text" id="rollNo" placeholder="Roll Number" readonly> <input type="text" id="branch"
-                placeholder="Branch" readonly> <input type="number" id="amount" placeholder="Fee Amount"> <input
-                type="date" id="paymentDate"> <select id="status">
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
-            </select> <button id="addFee">Add Fee Record</button> </div> <!-- Search -->
-        <div class="search-box"> <input type="text" id="searchFee" placeholder="Search Student Fee"> </div>
+
+        <!-- Heading -->
+        <div class="page-header">
+            <h1>💰 Fees Management</h1>
+        </div>
+
+
+        <!-- Dashboard Button -->
+        <div class="nav-buttons">
+
+            <a href="dashboard.html" class="dashboard-btn">
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- Fee Form -->
+        <div class="fee-form">
+
+            <select id="studentSelect">
+
+                <option value="">
+                    Select Student
+                </option>
+
+            </select>
+
+
+            <input
+                type="text"
+                id="rollNo"
+                placeholder="Roll Number"
+                readonly
+            >
+
+
+            <input
+                type="text"
+                id="branch"
+                placeholder="Branch"
+                readonly
+            >
+
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Fee Amount"
+            >
+
+
+            <input
+                type="date"
+                id="paymentDate"
+            >
+
+
+            <select id="status">
+
+                <option value="Paid">
+                    Paid
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+            </select>
+
+
+            <button id="addFee">
+                Add Fee Record
+            </button>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchFee"
+                placeholder="🔍 Search Student Fee"
+            >
+
+        </div>
+
+
         <!-- Fees Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Roll No</th>
-                    <th>Branch</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="feeTable"> </tbody>
-        </table>
+        <div class="table-box">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Roll No</th>
+
+                        <th>Branch</th>
+
+                        <th>Amount</th>
+
+                        <th>Date</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="feeTable">
+
+                    <!-- Fee Records -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
+
+
     <script src="fees.js"></script>
+
 </body>
 
 </html>

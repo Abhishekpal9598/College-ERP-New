@@ -1,45 +1,75 @@
- 
+ // ===============================
+// FEES MANAGEMENT
+// ===============================
+
 console.log("Fees Module Loaded");
 
 
-// Get Students Data
-let students = JSON.parse(localStorage.getItem("students")) || [];
+// ===============================
+// GET DATA
+// ===============================
 
-let fees = JSON.parse(localStorage.getItem("fees")) || [];
+let students =
+    JSON.parse(localStorage.getItem("students")) || [];
 
-
-// Elements
-const studentSelect = document.getElementById("studentSelect");
-const rollNo = document.getElementById("rollNo");
-const branch = document.getElementById("branch");
-
-const amount = document.getElementById("amount");
-const paymentDate = document.getElementById("paymentDate");
-const status = document.getElementById("status");
-
-const addFee = document.getElementById("addFee");
-
-const feeTable = document.getElementById("feeTable");
-
-const searchFee = document.getElementById("searchFee");
+let fees =
+    JSON.parse(localStorage.getItem("fees")) || [];
 
 
+// ===============================
+// ELEMENTS
+// ===============================
 
-// Load Students Dropdown
+const studentSelect =
+    document.getElementById("studentSelect");
 
-function loadStudents(){
+const rollNo =
+    document.getElementById("rollNo");
+
+const branch =
+    document.getElementById("branch");
+
+const amount =
+    document.getElementById("amount");
+
+const paymentDate =
+    document.getElementById("paymentDate");
+
+const status =
+    document.getElementById("status");
+
+const addFee =
+    document.getElementById("addFee");
+
+const feeTable =
+    document.getElementById("feeTable");
+
+const searchFee =
+    document.getElementById("searchFee");
+
+
+// ===============================
+// LOAD STUDENTS
+// ===============================
+
+function loadStudents() {
 
     studentSelect.innerHTML =
-    `<option value="">Select Student</option>`;
+        `<option value="">Select Student</option>`;
 
-    students.forEach((student,index)=>{
 
-        let option = document.createElement("option");
+    students.forEach((student, index) => {
+
+        const option =
+            document.createElement("option");
+
 
         option.value = index;
 
+
         option.textContent =
-        student.name;
+            student.name;
+
 
         studentSelect.appendChild(option);
 
@@ -51,150 +81,215 @@ function loadStudents(){
 loadStudents();
 
 
+// ===============================
+// AUTO FILL ROLL + BRANCH
+// ===============================
 
-// Auto Fill Roll & Branch
+studentSelect.addEventListener(
+    "change",
+    () => {
 
-studentSelect.addEventListener("change",()=>{
-
-    let student = students[studentSelect.value];
-
-    if(student){
-
-        rollNo.value = student.roll;
-        branch.value = student.branch;
-
-    }
-    else{
-
-        rollNo.value="";
-        branch.value="";
-
-    }
-
-});
+        const student =
+            students[studentSelect.value];
 
 
+        if (student) {
 
+            rollNo.value =
+                student.rollNo;
 
-// Add Fee Record
+            branch.value =
+                student.branch;
 
-addFee.addEventListener("click",()=>{
+        }
 
+        else {
 
-    let student = students[studentSelect.value];
+            rollNo.value = "";
 
+            branch.value = "";
 
-    if(!student || !amount.value){
-
-        alert("Please fill all details");
-        return;
+        }
 
     }
+);
 
 
+// ===============================
+// ADD FEE
+// ===============================
 
-    let feeData={
+addFee.addEventListener(
+    "click",
+    () => {
 
-        name:student.name,
-
-        roll:student.roll,
-
-        branch:student.branch,
-
-        amount:amount.value,
-
-        date:paymentDate.value,
-
-        status:status.value
-
-    };
+        const student =
+            students[studentSelect.value];
 
 
+        if (
+            !student ||
+            !amount.value
+        ) {
 
-    fees.push(feeData);
+            alert(
+                "Please select student and enter fee amount."
+            );
 
+            return;
 
-    localStorage.setItem(
-        "fees",
-        JSON.stringify(fees)
-    );
-
-
-    displayFees();
-
-
-    alert("Fee Added Successfully");
+        }
 
 
-});
+        const feeData = {
+
+            name:
+                student.name,
+
+            roll:
+                student.rollNo,
+
+            branch:
+                student.branch,
+
+            amount:
+                amount.value,
+
+            date:
+                paymentDate.value,
+
+            status:
+                status.value
+
+        };
 
 
+        fees.push(feeData);
 
 
-
-// Display Fees
-
-function displayFees(data = fees){
-
-
-    feeTable.innerHTML="";
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
 
 
-    data.forEach((fee,index)=>{
+        displayFees();
 
 
-        let row = `
+        // Clear form
 
-        <tr>
+        studentSelect.value = "";
 
-        <td>${fee.name}</td>
+        rollNo.value = "";
 
-        <td>${fee.roll}</td>
+        branch.value = "";
 
-        <td>${fee.branch}</td>
+        amount.value = "";
 
-        <td>₹${fee.amount}</td>
+        paymentDate.value = "";
 
-        <td>${fee.date}</td>
-
-        <td>${fee.status}</td>
+        status.value = "Paid";
 
 
-        <td>
+        alert(
+            "Fee Added Successfully"
+        );
 
-        <button onclick="deleteFee(${index})">
-        Delete
-        </button>
-
-        </td>
+    }
+);
 
 
-        </tr>
+// ===============================
+// DISPLAY FEES
+// ===============================
+
+function displayFees(data = fees) {
+
+    feeTable.innerHTML = "";
+
+
+    data.forEach((fee, index) => {
+
+        const row =
+            document.createElement("tr");
+
+
+        let statusClass =
+            fee.status === "Paid"
+                ? "status-paid"
+                : "status-pending";
+
+
+        row.innerHTML = `
+
+            <td>
+                ${fee.name}
+            </td>
+
+            <td>
+                ${fee.roll}
+            </td>
+
+            <td>
+                ${fee.branch}
+            </td>
+
+            <td>
+                ₹${fee.amount}
+            </td>
+
+            <td>
+                ${fee.date || "-"}
+            </td>
+
+            <td class="${statusClass}">
+                ${fee.status}
+            </td>
+
+            <td>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteFee(${index})"
+                >
+                    Delete
+                </button>
+
+            </td>
 
         `;
 
 
-        feeTable.innerHTML += row;
-
+        feeTable.appendChild(row);
 
     });
 
-
 }
-
 
 
 displayFees();
 
 
+// ===============================
+// DELETE FEE
+// ===============================
+
+function deleteFee(index) {
+
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this fee record?"
+        );
 
 
-// Delete Fee
+    if (!confirmDelete) {
 
-function deleteFee(index){
+        return;
+
+    }
 
 
-    fees.splice(index,1);
+    fees.splice(index, 1);
 
 
     localStorage.setItem(
@@ -205,39 +300,50 @@ function deleteFee(index){
 
     displayFees();
 
-
 }
 
 
+// ===============================
+// SEARCH FEE
+// ===============================
+
+searchFee.addEventListener(
+    "input",
+    () => {
+
+        const value =
+            searchFee.value
+                .toLowerCase()
+                .trim();
 
 
-// Search Fee
+        const filtered =
+            fees.filter((fee) => {
 
-searchFee.addEventListener("keyup",()=>{
+                return (
 
+                    fee.name
+                        .toLowerCase()
+                        .includes(value)
 
-    let value =
-    searchFee.value.toLowerCase();
+                    ||
 
+                    String(fee.roll)
+                        .toLowerCase()
+                        .includes(value)
 
-    let filtered =
-    fees.filter((fee)=>{
+                    ||
 
+                    fee.branch
+                        .toLowerCase()
+                        .includes(value)
 
-        return fee.name
-        .toLowerCase()
-        .includes(value)
-        ||
-        fee.roll
-        .toString()
-        .includes(value);
+                );
 
-
-    });
-
-
-    displayFees(filtered);
+            });
 
 
-});
+        displayFees(filtered);
 
+    }
+);

@@ -1,104 +1,256 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Attendance Management</title>
+    <title>Attendance Management</title>
 
-<link rel="stylesheet" href="attendance.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="attendance.css">
 
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<div class="top-header">
+        <!-- Heading -->
 
-<a href="dashboard.html"
-class="dashboard-btn">
+        <div class="page-header">
 
-<i class="fa-solid fa-house"></i>
+            <h1>📋 Attendance Management</h1>
 
-Dashboard
+        </div>
 
-</a>
+        <!-- Dashboard -->
 
-<h1>
+        <div class="nav-buttons">
 
-📅 Attendance Management
+            <a href="dashboard.html" class="dashboard-btn">
 
-</h1>
+                ← Dashboard
 
-<div class="total-box">
+            </a>
 
-<h3>
+        </div>
 
-Total Students :
+        <!-- Attendance Tabs -->
 
-<span id="totalAttendance">
+        <div class="attendance-tabs">
 
-0
+            <button
 
-</span>
+                id="studentTab"
 
-</h3>
+                class="tab-btn active"
 
-</div>
+            >
 
-</div>
+                👨‍🎓 Student Attendance
 
-<div class="search-box">
+            </button>
 
-<input
+            <button
 
-type="text"
+                id="teacherTab"
 
-id="searchAttendance"
+                class="tab-btn"
 
-placeholder="🔍 Search Student">
+            >
 
-</div>
+                👨‍🏫 Teacher Attendance
 
-<div class="table-box">
+            </button>
 
-<table>
+        </div>
 
-<thead>
+        <!-- =========================
 
-<tr>
+             STUDENT ATTENDANCE
 
-<th>Roll No</th>
+        ========================== -->
 
-<th>Name</th>
+        <section
 
-<th>Branch</th>
+            id="studentAttendanceSection"
 
-<th>Status</th>
+            class="attendance-section"
 
-</tr>
+        >
 
-</thead>
+            <div class="section-header">
 
-<tbody id="attendanceTable">
+                <h2>👨‍🎓 Student Attendance</h2>
 
-</tbody>
+                <input
 
-</table>
+                    type="date"
 
-</div>
+                    id="studentDate"
 
-</div>
+                >
 
-<script src="attendance.js"></script>
+            </div>
+
+            <div class="search-box">
+
+                <input
+
+                    type="text"
+
+                    id="studentSearch"
+
+                    placeholder="🔍 Search student..."
+
+                >
+
+            </div>
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S.No.</th>
+
+                            <th>Student Name</th>
+
+                            <th>Roll No.</th>
+
+                            <th>Branch</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="studentAttendanceTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="save-box">
+
+                <button
+
+                    id="saveStudentAttendance"
+
+                    class="save-btn"
+
+                >
+
+                    💾 Save Student Attendance
+
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+
+             TEACHER ATTENDANCE
+
+        ========================== -->
+
+        <section
+
+            id="teacherAttendanceSection"
+
+            class="attendance-section hidden"
+
+        >
+
+            <div class="section-header">
+
+                <h2>👨‍🏫 Teacher Attendance</h2>
+
+                <input
+
+                    type="date"
+
+                    id="teacherDate"
+
+                >
+
+            </div>
+
+            <div class="search-box">
+
+                <input
+
+                    type="text"
+
+                    id="teacherSearch"
+
+                    placeholder="🔍 Search teacher..."
+
+                >
+
+            </div>
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S.No.</th>
+
+                            <th>Teacher Name</th>
+
+                            <th>Teacher ID</th>
+
+                            <th>Subject</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="teacherAttendanceTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="save-box">
+
+                <button
+
+                    id="saveTeacherAttendance"
+
+                    class="save-btn"
+
+                >
+
+                    💾 Save Teacher Attendance
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="attendance.js"></script>
 
 </body>
 

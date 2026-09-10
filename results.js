@@ -1,243 +1,710 @@
+ // =======================================
+// RESULT MANAGEMENT
+// =======================================
+
 console.log("Result Management Loaded");
 
-// ==========================
-// Variables
-// ==========================
+// =======================================
+// GET DATA
+// =======================================
 
-let results = JSON.parse(localStorage.getItem("results")) || [];
+let students =
+    JSON.parse(localStorage.getItem("students")) || [];
 
-const resultForm = document.getElementById("resultForm");
-const studentName = document.getElementById("studentName");
-const rollNo = document.getElementById("rollNo");
-const subject = document.getElementById("subject");
-const marks = document.getElementById("marks");
+let results =
+    JSON.parse(localStorage.getItem("results")) || [];
 
-const resultTable = document.getElementById("resultTable");
-const totalResults = document.getElementById("totalResults");
-const addResultBtn = document.getElementById("addResultBtn");
-const searchResult = document.getElementById("searchResult");
+
+// =======================================
+// ELEMENTS
+// =======================================
+
+const studentSelect =
+    document.getElementById("studentSelect");
+
+const studentInfo =
+    document.getElementById("studentInfo");
+
+const selectedStudentName =
+    document.getElementById("selectedStudentName");
+
+const selectedStudentRoll =
+    document.getElementById("selectedStudentRoll");
+
+const selectedStudentBranch =
+    document.getElementById("selectedStudentBranch");
+
+const resultForm =
+    document.getElementById("resultForm");
+
+const subject =
+    document.getElementById("subject");
+
+const marks =
+    document.getElementById("marks");
+
+const resultTable =
+    document.getElementById("resultTable");
+
+const totalSubjects =
+    document.getElementById("totalSubjects");
+
+const totalMarks =
+    document.getElementById("totalMarks");
+
+const percentage =
+    document.getElementById("percentage");
+
+const noResult =
+    document.getElementById("noResult");
+
+const addResultBtn =
+    document.getElementById("addResultBtn");
 
 let editIndex = -1;
 
-// ==========================
-// Save Results
-// ==========================
+
+// =======================================
+// SAVE RESULTS
+// =======================================
 
 function saveResults() {
-    localStorage.setItem("results", JSON.stringify(results));
-    localStorage.setItem("resultCount", results.length);
+
+    localStorage.setItem(
+        "results",
+        JSON.stringify(results)
+    );
+
+    localStorage.setItem(
+        "resultCount",
+        results.length
+    );
 }
 
-// ==========================
-// Grade Function
-// ==========================
+
+// =======================================
+// GRADE
+// =======================================
 
 function getGrade(mark) {
 
     mark = Number(mark);
 
-    if (mark >= 90) return "A+";
-    if (mark >= 80) return "A";
-    if (mark >= 70) return "B";
-    if (mark >= 60) return "C";
-    if (mark >= 50) return "D";
+    if (mark >= 90) {
+        return "A+";
+    }
+
+    if (mark >= 80) {
+        return "A";
+    }
+
+    if (mark >= 70) {
+        return "B";
+    }
+
+    if (mark >= 60) {
+        return "C";
+    }
+
+    if (mark >= 50) {
+        return "D";
+    }
 
     return "F";
 }
 
-// ==========================
-// Display Results
-// ==========================
 
-function displayResults() {
+// =======================================
+// LOAD STUDENTS
+// =======================================
 
-    resultTable.innerHTML = "";
+function loadStudents() {
 
-    results.forEach((result, index) => {
+    studentSelect.innerHTML = `
+        <option value="">
+            -- Select Student --
+        </option>
+    `;
 
-        resultTable.innerHTML += `
-        <tr>
-            <td>${result.rollNo}</td>
-            <td>${result.name}</td>
-            <td>${result.subject}</td>
-            <td>${result.marks}</td>
-            <td>${result.grade}</td>
-            <td>
-                <button class="edit-btn" onclick="editResult(${index})">
-                    Edit
-                </button>
+    console.log("Students Loaded:", students);
 
-                <button class="delete-btn" onclick="deleteResult(${index})">
-                    Delete
-                </button>
-            </td>
-        </tr>
-        `;
+    students.forEach(function (student) {
+
+        const option =
+            document.createElement("option");
+
+        /*
+            IMPORTANT:
+            Tumhare students data me
+            roll key hai.
+        */
+
+        option.value = student.roll;
+
+        option.textContent =
+            `${student.name} - Roll No. ${student.roll}`;
+
+        studentSelect.appendChild(option);
 
     });
 
-    totalResults.textContent = results.length;
+    console.log(
+        "Student Options:",
+        studentSelect.options.length
+    );
 }
 
-displayResults();
 
-// ==========================
-// Add / Update Result
-// ==========================
+// =======================================
+// STUDENT SELECT
+// =======================================
 
-resultForm.addEventListener("submit", function (e) {
+studentSelect.addEventListener(
+    "change",
+    function () {
 
-    e.preventDefault();
-
-    const name = studentName.value.trim();
-    const roll = rollNo.value.trim();
-    const sub = subject.value.trim();
-    const mark = marks.value.trim();
-
-    if (name === "" || roll === "" || sub === "" || mark === "") {
-        alert("Please fill all fields.");
-        return;
-    }
-
-    if (mark < 0 || mark > 100) {
-        alert("Marks must be between 0 and 100.");
-        return;
-    }
-
-    const grade = getGrade(mark);
-
-    if (editIndex === -1) {
-
-        const exists = results.some(result =>
-            result.rollNo === roll &&
-            result.subject.toLowerCase() === sub.toLowerCase()
-        );
-
-        if (exists) {
-            alert("Result for this Roll No and Subject already exists.");
-            return;
-        }
-
-        results.push({
-            rollNo: roll,
-            name: name,
-            subject: sub,
-            marks: mark,
-            grade: grade
-        });
-
-        alert("Result Added Successfully.");
-
-    } else {
-
-        const exists = results.some((result, index) =>
-            result.rollNo === roll &&
-            result.subject.toLowerCase() === sub.toLowerCase() &&
-            index !== editIndex
-        );
-
-        if (exists) {
-            alert("Result for this Roll No and Subject already exists.");
-            return;
-        }
-
-        results[editIndex] = {
-            rollNo: roll,
-            name: name,
-            subject: sub,
-            marks: mark,
-            grade: grade
-        };
+        const selectedRoll =
+            this.value;
 
         editIndex = -1;
-        addResultBtn.textContent = "Add Result";
 
-        alert("Result Updated Successfully.");
+        addResultBtn.textContent =
+            "Add Result";
+
+        resultForm.reset();
+
+        if (!selectedRoll) {
+
+            studentInfo.classList.add(
+                "hidden"
+            );
+
+            resultTable.innerHTML = "";
+
+            totalSubjects.textContent = "0";
+
+            totalMarks.textContent = "0";
+
+            percentage.textContent = "0%";
+
+            noResult.textContent =
+                "Please select a student to view result.";
+
+            return;
+        }
+
+
+        const student =
+            students.find(function (item) {
+
+                return String(item.roll) ===
+                    String(selectedRoll);
+
+            });
+
+
+        if (!student) {
+
+            console.log(
+                "Student not found:",
+                selectedRoll
+            );
+
+            return;
+        }
+
+
+        // ===================================
+        // STUDENT INFORMATION
+        // ===================================
+
+        studentInfo.classList.remove(
+            "hidden"
+        );
+
+        selectedStudentName.textContent =
+            student.name;
+
+        selectedStudentRoll.textContent =
+            student.roll;
+
+        selectedStudentBranch.textContent =
+            student.branch;
+
+
+        // ===================================
+        // SHOW RESULT
+        // ===================================
+
+        displayStudentResult(
+            selectedRoll
+        );
+
+    }
+);
+
+
+// =======================================
+// DISPLAY STUDENT RESULT
+// =======================================
+
+function displayStudentResult(selectedRoll) {
+
+    resultTable.innerHTML = "";
+
+
+    const studentResults =
+        results.filter(function (result) {
+
+            return String(result.rollNo) ===
+                String(selectedRoll);
+
+        });
+
+
+    // ===================================
+    // NO RESULT
+    // ===================================
+
+    if (studentResults.length === 0) {
+
+        noResult.textContent =
+            "No result added for this student yet.";
+
+        totalSubjects.textContent = "0";
+
+        totalMarks.textContent = "0";
+
+        percentage.textContent = "0%";
+
+        return;
     }
 
-    saveResults();
-    displayResults();
-    resultForm.reset();
 
-});
-// ==========================
-// Edit Result
-// ==========================
+    noResult.textContent = "";
+
+
+    // ===================================
+    // TOTAL MARKS
+    // ===================================
+
+    let calculatedTotal = 0;
+
+
+    studentResults.forEach(
+        function (result, index) {
+
+            calculatedTotal +=
+                Number(result.marks);
+
+
+            const originalIndex =
+                results.indexOf(result);
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${result.subject}
+                </td>
+
+                <td>
+                    ${result.marks}
+                </td>
+
+                <td class="grade">
+                    ${result.grade}
+                </td>
+
+                <td>
+
+                    <button
+                        class="edit-btn"
+                        onclick="editResult(${originalIndex})"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteResult(${originalIndex})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            resultTable.appendChild(row);
+
+        }
+    );
+
+
+    // ===================================
+    // PERCENTAGE
+    // ===================================
+
+    const calculatedPercentage =
+        (
+            calculatedTotal /
+            (studentResults.length * 100)
+        ) * 100;
+
+
+    totalSubjects.textContent =
+        studentResults.length;
+
+    totalMarks.textContent =
+        calculatedTotal;
+
+    percentage.textContent =
+        Math.round(calculatedPercentage) + "%";
+}
+
+
+// =======================================
+// ADD / UPDATE RESULT
+// =======================================
+
+resultForm.addEventListener(
+    "submit",
+    function (e) {
+
+        e.preventDefault();
+
+
+        const selectedRoll =
+            studentSelect.value;
+
+
+        if (!selectedRoll) {
+
+            alert(
+                "Please select a student first."
+            );
+
+            return;
+        }
+
+
+        const student =
+            students.find(function (item) {
+
+                return String(item.roll) ===
+                    String(selectedRoll);
+
+            });
+
+
+        if (!student) {
+
+            alert("Student not found.");
+
+            return;
+        }
+
+
+        const sub =
+            subject.value.trim();
+
+
+        const mark =
+            marks.value.trim();
+
+
+        if (
+            sub === "" ||
+            mark === ""
+        ) {
+
+            alert(
+                "Please enter subject and marks."
+            );
+
+            return;
+        }
+
+
+        if (
+            Number(mark) < 0 ||
+            Number(mark) > 100
+        ) {
+
+            alert(
+                "Marks must be between 0 and 100."
+            );
+
+            return;
+        }
+
+
+        const grade =
+            getGrade(mark);
+
+
+        // ===================================
+        // ADD
+        // ===================================
+
+        if (editIndex === -1) {
+
+            const exists =
+                results.some(function (result) {
+
+                    return (
+                        String(result.rollNo) ===
+                        String(selectedRoll)
+
+                        &&
+
+                        result.subject
+                            .toLowerCase() ===
+                        sub.toLowerCase()
+                    );
+
+                });
+
+
+            if (exists) {
+
+                alert(
+                    "This subject result already exists for this student."
+                );
+
+                return;
+            }
+
+
+            results.push({
+
+                rollNo:
+                    selectedRoll,
+
+                name:
+                    student.name,
+
+                branch:
+                    student.branch,
+
+                subject:
+                    sub,
+
+                marks:
+                    mark,
+
+                grade:
+                    grade
+
+            });
+
+
+            alert(
+                "Result Added Successfully."
+            );
+
+        }
+
+
+        // ===================================
+        // UPDATE
+        // ===================================
+
+        else {
+
+            results[editIndex] = {
+
+                rollNo:
+                    selectedRoll,
+
+                name:
+                    student.name,
+
+                branch:
+                    student.branch,
+
+                subject:
+                    sub,
+
+                marks:
+                    mark,
+
+                grade:
+                    grade
+
+            };
+
+
+            editIndex = -1;
+
+            addResultBtn.textContent =
+                "Add Result";
+
+
+            alert(
+                "Result Updated Successfully."
+            );
+        }
+
+
+        // ===================================
+        // SAVE
+        // ===================================
+
+        saveResults();
+
+
+        resultForm.reset();
+
+
+        displayStudentResult(
+            selectedRoll
+        );
+
+    }
+);
+
+
+// =======================================
+// EDIT RESULT
+// =======================================
 
 function editResult(index) {
 
-    studentName.value = results[index].name;
-    rollNo.value = results[index].rollNo;
-    subject.value = results[index].subject;
-    marks.value = results[index].marks;
+    const result =
+        results[index];
 
-    editIndex = index;
 
-    addResultBtn.textContent = "Update Result";
+    if (!result) {
+        return;
+    }
+
+
+    studentSelect.value =
+        result.rollNo;
+
+
+    const student =
+        students.find(function (item) {
+
+            return String(item.roll) ===
+                String(result.rollNo);
+
+        });
+
+
+    if (student) {
+
+        studentInfo.classList.remove(
+            "hidden"
+        );
+
+        selectedStudentName.textContent =
+            student.name;
+
+        selectedStudentRoll.textContent =
+            student.roll;
+
+        selectedStudentBranch.textContent =
+            student.branch;
+    }
+
+
+    subject.value =
+        result.subject;
+
+    marks.value =
+        result.marks;
+
+
+    editIndex =
+        index;
+
+
+    addResultBtn.textContent =
+        "Update Result";
+
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
 }
 
-// ==========================
-// Delete Result
-// ==========================
+
+// =======================================
+// DELETE RESULT
+// =======================================
 
 function deleteResult(index) {
 
-    if (confirm("Delete this result?")) {
+    const result =
+        results[index];
 
-        results.splice(index, 1);
+
+    if (!result) {
+        return;
+    }
+
+
+    if (
+        confirm(
+            `Delete ${result.subject} result?`
+        )
+    ) {
+
+        const selectedRoll =
+            studentSelect.value;
+
+
+        results.splice(
+            index,
+            1
+        );
+
 
         saveResults();
-        displayResults();
 
-        alert("Result Deleted Successfully.");
+
+        displayStudentResult(
+            selectedRoll
+        );
+
+
+        alert(
+            "Result Deleted Successfully."
+        );
     }
-
 }
 
-// ==========================
-// Search Result
-// ==========================
 
-searchResult.addEventListener("keyup", function () {
+// =======================================
+// INITIAL LOAD
+// =======================================
 
-    const value = this.value.toLowerCase();
+loadStudents();
 
-    const rows = resultTable.getElementsByTagName("tr");
 
-    for (let row of rows) {
+console.log(
+    "Students:",
+    students
+);
 
-        const roll = row.cells[0].textContent.toLowerCase();
-        const name = row.cells[1].textContent.toLowerCase();
-        const sub = row.cells[2].textContent.toLowerCase();
-        const grade = row.cells[4].textContent.toLowerCase();
 
-        if (
-            roll.includes(value) ||
-            name.includes(value) ||
-            sub.includes(value) ||
-            grade.includes(value)
-        ) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-
-    }
-
-});
-
-// ==========================
-// Dashboard Counter Update
-// ==========================
-
-function updateDashboardCounter() {
-    localStorage.setItem("resultCount", results.length);
-}
-
-updateDashboardCounter();
-
-// ==========================
-// Initialize
-// ==========================
-
-displayResults();
+console.log(
+    "Results:",
+    results
+);
