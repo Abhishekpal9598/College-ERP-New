@@ -1,0 +1,30 @@
+{
+  "name": "college-erp",
+  "version": "1.0.0",
+  "description": "Production-ready College ERP System with Express.js REST API, MongoDB Mongoose, and Modern Frontend",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev:backend": "node backend/src/server.js",
+    "dev:frontend": "node frontend/server.js",
+    "test": "node tests/unit/test_units.js && node tests/backend/test_backend.js && node tests/security/test_security_hardening.js && node tests/security/test_security_audit.js && node tests/frontend/test_routes.js",
+    "test:unit": "node tests/unit/test_units.js",
+    "test:backend": "node tests/backend/test_backend.js",
+    "test:security": "node tests/security/test_security_hardening.js",
+    "test:audit": "node tests/security/test_security_audit.js",
+    "test:integration": "node tests/integration/test_final_verification.js",
+    "test:frontend": "node tests/frontend/test_routes.js"
+  },
+  "keywords": [
+    "college-erp",
+    "express",
+    "mongodb",
+    "mongoose",
+    "jwt",
+    "authentication",
+    "rbac",
+    "rate-limiting"
+  ],
+  "author": "Abhishek Pal",
+  "license": "ISC"
+}

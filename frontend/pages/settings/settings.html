@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - College ERP</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>⚙️ Settings</h1>
+
+        <div class="nav-buttons">
+            <a href="../dashboard/dashboard.html" class="back-btn">
+                ⬅ Dashboard
+            </a>
+        </div>
+
+        <form id="settingsForm" class="form-box">
+            <input
+                type="text"
+                id="collegeName"
+                placeholder="College Name"
+                required
+            >
+
+            <input
+                type="text"
+                id="adminName"
+                placeholder="Admin Name"
+                required
+            >
+
+            <button type="submit" id="saveBtn">
+                Save Settings
+            </button>
+        </form>
+
+        <div class="preview">
+            <h2>Current Settings</h2>
+            <p>
+                <strong>College:</strong>
+                <span id="showCollege">Not Set</span>
+            </p>
+            <p>
+                <strong>Admin:</strong>
+                <span id="showAdmin">Not Set</span>
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        requireAuth();
+    </script>
+        <script src="../../js/api.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="settings.js"></script>
+</body>
+
+</html>

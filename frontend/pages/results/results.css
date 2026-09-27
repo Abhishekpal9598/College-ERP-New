@@ -1,0 +1,299 @@
+/* ===========================
+   RESULT MANAGEMENT
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    color: #1e3a8a;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.nav-buttons {
+    margin-bottom: 25px;
+}
+
+.back-btn {
+    display: inline-block;
+    text-decoration: none;
+    background: #2563eb;
+    color: white;
+    padding: 11px 20px;
+    border-radius: 9px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #1d4ed8;
+}
+
+.student-selection {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.student-selection label {
+    display: block;
+    margin-bottom: 10px;
+    color: #1e3a8a;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.student-selection select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    outline: none;
+    font-size: 15px;
+    background: white;
+    cursor: pointer;
+}
+
+.student-selection select:focus {
+    border-color: #2563eb;
+}
+
+.student-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-box {
+    background: #eff6ff;
+    border-radius: 10px;
+    padding: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.info-box span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.info-box strong {
+    color: #1e3a8a;
+    font-size: 17px;
+}
+
+.hidden {
+    display: none;
+}
+
+.form-box {
+    display: flex;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.form-box input {
+    flex: 1;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    outline: none;
+    font-size: 15px;
+}
+
+.form-box input:focus {
+    border-color: #2563eb;
+}
+
+.form-box button {
+    padding: 13px 22px;
+    border: none;
+    border-radius: 9px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.form-box button:hover {
+    background: #1d4ed8;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.result-header h2 {
+    color: #1e3a8a;
+}
+
+.result-summary {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.result-summary span {
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.result-summary strong {
+    color: #2563eb;
+}
+
+.table-box {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #2563eb;
+    color: white;
+    padding: 15px 12px;
+    text-align: center;
+}
+
+td {
+    padding: 14px 12px;
+    text-align: center;
+    border-bottom: 1px solid #eeeeee;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+.grade {
+    font-weight: 700;
+}
+
+.edit-btn {
+    padding: 8px 13px;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.delete-btn {
+    padding: 8px 13px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #d97706;
+}
+
+.delete-btn:hover {
+    background: #b91c1c;
+}
+
+.no-result {
+    text-align: center;
+    padding: 35px;
+    color: #64748b;
+    font-size: 16px;
+}
+
+@media (max-width: 800px) {
+    .container {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .student-info {
+        grid-template-columns: 1fr;
+    }
+
+    .form-box {
+        flex-direction: column;
+    }
+
+    .form-box input,
+    .form-box button {
+        width: 100%;
+    }
+
+    .result-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .result-summary {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 500px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 26px;
+    }
+
+    .back-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

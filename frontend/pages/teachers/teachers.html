@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Management - College ERP</title>
+
+    <link rel="stylesheet" href="teachers.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="top-header">
+            <a href="../dashboard/dashboard.html" class="dashboard-btn">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </a>
+
+            <h1>👨‍🏫 Teacher Management</h1>
+
+            <div class="total-box">
+                <h3>
+                    Total Teachers : <span id="totalTeachers">0</span>
+                </h3>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchTeacher" placeholder="🔍 Search Teacher">
+        </div>
+
+        <form id="teacherForm" class="form-box">
+            <input type="text" id="teacherName" placeholder="Teacher Name" required>
+            <input type="text" id="teacherId" placeholder="Teacher ID" required>
+            <input type="text" id="subject" placeholder="Subject" required>
+            <button type="submit" id="addTeacherBtn">
+                ➕ Add Teacher
+            </button>
+        </form>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Teacher ID</th>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTable">
+                    <!-- Teachers will appear here -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        requireAuth();
+    </script>
+        <script src="../../js/api.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="teachers.js"></script>
+</body>
+
+</html>

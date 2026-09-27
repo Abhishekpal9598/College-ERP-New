@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College ERP - Dashboard</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>College ERP</h2>
+            <ul>
+                <li class="active">
+                    <a href="../dashboard/dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="../students/students.html">
+                        <i class="fas fa-user-graduate"></i>
+                        Students
+                    </a>
+                </li>
+                <li>
+                    <a href="../teachers/teachers.html">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Teachers
+                    </a>
+                </li>
+                <li>
+                    <a href="../attendance/attendance.html">
+                        <i class="fas fa-calendar-check"></i>
+                        Attendance
+                    </a>
+                </li>
+                <li>
+                    <a href="../fees/fees.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Fees
+                    </a>
+                </li>
+                <li>
+                    <a href="../results/results.html">
+                        <i class="fas fa-chart-line"></i>
+                        Results
+                    </a>
+                </li>
+                <li>
+                    <a href="../settings/settings.html">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="logout(); return false;">
+                        <i class="fas fa-right-from-bracket"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+
+            <!-- Header -->
+            <div class="header">
+                <h1>Dashboard</h1>
+                <div class="admin">
+                    Welcome, Administrator
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="cards">
+                <div class="card">
+                    <i class="fa-solid fa-user-graduate card-icon"></i>
+                    <h3>Total Students</h3>
+                    <h2 id="totalStudentsCard">0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-chalkboard-teacher card-icon"></i>
+                    <h3>Total Teachers</h3>
+                    <h2 id="teacherCard">0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-user-check card-icon"></i>
+                    <h3>Student Attendance</h3>
+                    <h2 id="studentAttendance">0%</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-chalkboard-user card-icon"></i>
+                    <h3>Teacher Attendance</h3>
+                    <h2 id="teacherAttendance">0%</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-money-bill-wave card-icon"></i>
+                    <h3>Fees Collected</h3>
+                    <h2 id="feesCard">₹0</h2>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-chart-line card-icon"></i>
+                    <h3>Total Results</h3>
+                    <h2 id="resultCard">0</h2>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity">
+                <h2>Recent Activity</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityTableBody">
+                        <tr>
+                            <td>Today</td>
+                            <td>Live MongoDB Sync Active</td>
+                            <td>✅ Connected</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+        <script src="../../js/api.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

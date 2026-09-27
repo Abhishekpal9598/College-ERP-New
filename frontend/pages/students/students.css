@@ -1,0 +1,292 @@
+/* ===========================
+   STUDENTS PAGE
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f4f7fc;
+    min-height: 100vh;
+    padding: 30px 15px;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+/* ===========================
+   PAGE HEADER
+=========================== */
+
+.page-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.page-header h1 {
+    color: #1e3a8a;
+    font-size: 34px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+/* ===========================
+   NAVIGATION
+=========================== */
+
+.nav-buttons {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.back-btn {
+    display: inline-block;
+    text-decoration: none;
+    background: #2563eb;
+    color: #ffffff;
+    padding: 11px 20px;
+    border-radius: 9px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #1d4ed8;
+}
+
+/* ===========================
+   SEARCH + TOTAL
+=========================== */
+
+.top-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding: 18px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+#searchStudent {
+    flex: 1;
+    min-width: 220px;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    outline: none;
+    font-size: 15px;
+}
+
+#searchStudent:focus {
+    border-color: #2563eb;
+}
+
+.top-section h2 {
+    margin: 0;
+    padding: 11px 18px;
+    background: #eef4ff;
+    border-radius: 9px;
+    color: #1e3a8a;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+#totalStudents {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+/* ===========================
+   STUDENT FORM
+=========================== */
+
+.form-box {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.form-box input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    outline: none;
+    font-size: 15px;
+    background: #ffffff;
+}
+
+.form-box input:focus {
+    border-color: #2563eb;
+}
+
+.form-box button {
+    min-width: 135px;
+    padding: 13px 18px;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.form-box button:hover {
+    background: #1d4ed8;
+}
+
+/* ===========================
+   TABLE
+=========================== */
+
+.table-box {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+th {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+td {
+    padding: 14px 12px;
+    text-align: center;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ===========================
+   ACTION BUTTONS
+=========================== */
+
+.edit-btn {
+    background: #f59e0b;
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-btn:hover {
+    background: #d97706;
+}
+
+.delete-btn {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width: 900px) {
+    body {
+        padding: 20px 10px;
+    }
+
+    .container {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    .top-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .top-section h2 {
+        text-align: center;
+    }
+
+    .form-box {
+        grid-template-columns: 1fr;
+    }
+
+    .form-box button {
+        width: 100%;
+    }
+
+    .nav-buttons {
+        margin-bottom: 22px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .top-section {
+        padding: 14px;
+    }
+
+    th, td {
+        padding: 11px 8px;
+        font-size: 13px;
+    }
+
+    .edit-btn, .delete-btn {
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+}

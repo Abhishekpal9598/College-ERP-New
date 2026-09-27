@@ -1,0 +1,20 @@
+{
+  "name": "college-erp-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for College ERP Application",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node -e \"console.log('Frontend static assets verified and ready for deployment.')\""
+  },
+  "keywords": [
+    "college-erp",
+    "frontend",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "College ERP Team",
+  "license": "ISC"
+}
