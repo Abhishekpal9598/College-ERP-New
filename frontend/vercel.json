@@ -12,6 +12,22 @@
     { "source": "/attendance", "destination": "/pages/attendance/attendance.html" },
     { "source": "/fees", "destination": "/pages/fees/fees.html" },
     { "source": "/results", "destination": "/pages/results/results.html" },
-    { "source": "/settings", "destination": "/pages/settings/settings.html" }
+    { "source": "/settings", "destination": "/pages/settings/settings.html" },
+    { "source": "/login.css", "destination": "/pages/login/login.css" },
+    { "source": "/login.js", "destination": "/pages/login/login.js" },
+    { "source": "/dashboard.css", "destination": "/pages/dashboard/dashboard.css" },
+    { "source": "/dashboard.js", "destination": "/pages/dashboard/dashboard.js" },
+    { "source": "/students.css", "destination": "/pages/students/students.css" },
+    { "source": "/students.js", "destination": "/pages/students/students.js" },
+    { "source": "/teachers.css", "destination": "/pages/teachers/teachers.css" },
+    { "source": "/teachers.js", "destination": "/pages/teachers/teachers.js" },
+    { "source": "/attendance.css", "destination": "/pages/attendance/attendance.css" },
+    { "source": "/attendance.js", "destination": "/pages/attendance/attendance.js" },
+    { "source": "/fees.css", "destination": "/pages/fees/fees.css" },
+    { "source": "/fees.js", "destination": "/pages/fees/fees.js" },
+    { "source": "/results.css", "destination": "/pages/results/results.css" },
+    { "source": "/results.js", "destination": "/pages/results/results.js" },
+    { "source": "/settings.css", "destination": "/pages/settings/settings.css" },
+    { "source": "/settings.js", "destination": "/pages/settings/settings.js" }
   ]
 }

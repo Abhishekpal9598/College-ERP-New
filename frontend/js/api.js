@@ -15,8 +15,8 @@ const getApiBaseUrl = () => {
             return "http://localhost:5000/api";
         }
     }
-    // In production, fallback to same-origin /api or environment variable
-    return "/api";
+    // In production, fallback to Render backend API endpoint
+    return "https://college-erp-api.onrender.com/api";
 };
 
 /**

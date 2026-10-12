@@ -24,7 +24,23 @@ const ROUTE_REWRITES = {
     '/attendance': '/pages/attendance/attendance.html',
     '/fees': '/pages/fees/fees.html',
     '/results': '/pages/results/results.html',
-    '/settings': '/pages/settings/settings.html'
+    '/settings': '/pages/settings/settings.html',
+    '/login.css': '/pages/login/login.css',
+    '/login.js': '/pages/login/login.js',
+    '/dashboard.css': '/pages/dashboard/dashboard.css',
+    '/dashboard.js': '/pages/dashboard/dashboard.js',
+    '/students.css': '/pages/students/students.css',
+    '/students.js': '/pages/students/students.js',
+    '/teachers.css': '/pages/teachers/teachers.css',
+    '/teachers.js': '/pages/teachers/teachers.js',
+    '/attendance.css': '/pages/attendance/attendance.css',
+    '/attendance.js': '/pages/attendance/attendance.js',
+    '/fees.css': '/pages/fees/fees.css',
+    '/fees.js': '/pages/fees/fees.js',
+    '/results.css': '/pages/results/results.css',
+    '/results.js': '/pages/results/results.js',
+    '/settings.css': '/pages/settings/settings.css',
+    '/settings.js': '/pages/settings/settings.js'
 };
 
 const server = http.createServer((req, res) => {

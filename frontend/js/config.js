@@ -12,7 +12,7 @@ window.APP_CONFIG = {
                 return "http://localhost:5000/api";
             }
         }
-        return "/api";
+        return "https://college-erp-api.onrender.com/api";
     })(),
     APP_NAME: "College ERP",
     VERSION: "1.0.0"
