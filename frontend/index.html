@@ -108,7 +108,7 @@
         <div class="spinner"></div>
         <p class="status-msg" id="status-text">Redirecting to your workspace...</p>
 
-        <a href="pages/login/login.html" id="manual-link" class="btn-launch">Open Login Page</a>
+        <a href="/pages/login/login.html" id="manual-link" class="btn-launch">Open Login Page</a>
     </div>
 
     <script>
@@ -116,11 +116,11 @@
             const token = localStorage.getItem("token") || localStorage.getItem("jwt_token");
             const isLoggedIn = localStorage.getItem("isLoggedIn") === "true" || !!token;
             
-            const targetPage = isLoggedIn ? "pages/dashboard/dashboard.html" : "pages/login/login.html";
+            const targetPage = isLoggedIn ? "/pages/dashboard/dashboard.html" : "/pages/login/login.html";
 
             setTimeout(() => {
                 window.location.replace(targetPage);
-            }, 500);
+            }, 300);
         })();
     </script>
 </body>

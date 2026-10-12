@@ -5,9 +5,10 @@
 
 const getApiBaseUrl = () => {
     if (typeof window !== "undefined") {
-        if (window.__API_URL__) return window.__API_URL__;
+        if (window.__API_URL__) return window.__API_URL__.replace(/\/+$/, "");
         const storedUrl = localStorage.getItem("API_URL");
-        if (storedUrl) return storedUrl;
+        if (storedUrl) return storedUrl.replace(/\/+$/, "");
+        if (window.APP_CONFIG && window.APP_CONFIG.API_URL) return window.APP_CONFIG.API_URL.replace(/\/+$/, "");
         
         // In local development, connect to local backend on port 5000
         if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -18,12 +19,11 @@ const getApiBaseUrl = () => {
     return "/api";
 };
 
-const API_BASE = getApiBaseUrl();
-
 /**
  * Core fetch wrapper with auth header attachment and graceful offline handling
  */
 async function apiFetch(endpoint, options = {}) {
+    const apiBase = getApiBaseUrl();
     const token = localStorage.getItem("token");
 
     const defaultHeaders = {
@@ -43,7 +43,7 @@ async function apiFetch(endpoint, options = {}) {
     };
 
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, config);
+        const response = await fetch(`${apiBase}${endpoint}`, config);
         const data = await response.json().catch(() => null);
 
         // Handle 401 Unauthorized (session expired or invalid token)
