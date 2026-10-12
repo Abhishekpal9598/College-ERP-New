@@ -1,9 +1,9 @@
 {
   "name": "college-erp-frontend",
   "version": "1.0.0",
-  "description": "Frontend for College ERP Application",
+  "private": true,
+  "description": "Frontend for College ERP Application (Vanilla HTML/CSS/JS)",
   "scripts": {
-    "build": "node -e \"console.log('Frontend static assets verified and ready for deployment.')\"",
     "dev": "node dev-server.js"
   },
   "keywords": [

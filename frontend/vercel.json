@@ -1,6 +1,10 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "cleanUrls": false,
   "rewrites": [
-    { "source": "/", "destination": "/pages/login/login.html" },
+    { "source": "/", "destination": "/index.html" },
     { "source": "/login", "destination": "/pages/login/login.html" },
     { "source": "/dashboard", "destination": "/pages/dashboard/dashboard.html" },
     { "source": "/students", "destination": "/pages/students/students.html" },
@@ -8,11 +12,6 @@
     { "source": "/attendance", "destination": "/pages/attendance/attendance.html" },
     { "source": "/fees", "destination": "/pages/fees/fees.html" },
     { "source": "/results", "destination": "/pages/results/results.html" },
-    { "source": "/settings", "destination": "/pages/settings/settings.html" },
-    { "source": "/frontend/pages/:path*", "destination": "/pages/:path*" },
-    { "source": "/frontend/js/:path*", "destination": "/js/:path*" },
-    { "source": "/frontend/css/:path*", "destination": "/css/:path*" },
-    { "source": "/frontend/public/:path*", "destination": "/public/:path*" }
+    { "source": "/settings", "destination": "/pages/settings/settings.html" }
   ]
 }
-

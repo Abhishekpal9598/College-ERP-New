@@ -15,9 +15,23 @@ const MIME_TYPES = {
     '.svg': 'image/svg+xml'
 };
 
+const ROUTE_REWRITES = {
+    '/': '/index.html',
+    '/login': '/pages/login/login.html',
+    '/dashboard': '/pages/dashboard/dashboard.html',
+    '/students': '/pages/students/students.html',
+    '/teachers': '/pages/teachers/teachers.html',
+    '/attendance': '/pages/attendance/attendance.html',
+    '/fees': '/pages/fees/fees.html',
+    '/results': '/pages/results/results.html',
+    '/settings': '/pages/settings/settings.html'
+};
+
 const server = http.createServer((req, res) => {
     let reqPath = decodeURI(req.url.split('?')[0]);
-    if (reqPath === '/' || reqPath === '') reqPath = '/public/index.html';
+    if (ROUTE_REWRITES[reqPath]) {
+        reqPath = ROUTE_REWRITES[reqPath];
+    }
 
     // Strip leading slash for safe cross-platform resolution
     let cleanRelPath = reqPath.replace(/^\/+/, '');
@@ -39,5 +53,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Frontend server running at http://localhost:${PORT}/public/index.html`);
+    console.log(`Frontend dev server running at http://localhost:${PORT}/`);
 });
