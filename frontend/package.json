@@ -4,8 +4,8 @@
   "description": "Frontend for College ERP Application",
   "main": "public/index.html",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node dev-server.js",
+    "dev": "node dev-server.js",
     "build": "node -e \"console.log('Frontend static assets verified and ready for deployment.')\""
   },
   "keywords": [

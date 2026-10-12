@@ -19,7 +19,9 @@ const server = http.createServer((req, res) => {
     let reqPath = decodeURI(req.url.split('?')[0]);
     if (reqPath === '/' || reqPath === '') reqPath = '/public/index.html';
 
-    let filePath = path.join(BASE_DIR, reqPath);
+    // Strip leading slash for safe cross-platform resolution
+    let cleanRelPath = reqPath.replace(/^\/+/, '');
+    let filePath = path.join(BASE_DIR, cleanRelPath);
 
     fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) {

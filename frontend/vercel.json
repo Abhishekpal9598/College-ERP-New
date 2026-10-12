@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/pages/login/login.html" },
+    { "source": "/login", "destination": "/pages/login/login.html" },
+    { "source": "/dashboard", "destination": "/pages/dashboard/dashboard.html" },
+    { "source": "/students", "destination": "/pages/students/students.html" },
+    { "source": "/teachers", "destination": "/pages/teachers/teachers.html" },
+    { "source": "/attendance", "destination": "/pages/attendance/attendance.html" },
+    { "source": "/fees", "destination": "/pages/fees/fees.html" },
+    { "source": "/results", "destination": "/pages/results/results.html" },
+    { "source": "/settings", "destination": "/pages/settings/settings.html" }
+  ]
+}
