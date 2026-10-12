@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/pages/login/login.html" },
     { "source": "/login", "destination": "/pages/login/login.html" },

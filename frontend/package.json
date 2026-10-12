@@ -2,11 +2,9 @@
   "name": "college-erp-frontend",
   "version": "1.0.0",
   "description": "Frontend for College ERP Application",
-  "main": "public/index.html",
   "scripts": {
-    "start": "node dev-server.js",
-    "dev": "node dev-server.js",
-    "build": "node -e \"console.log('Frontend static assets verified and ready for deployment.')\""
+    "build": "node -e \"console.log('Frontend static assets verified and ready for deployment.')\"",
+    "dev": "node dev-server.js"
   },
   "keywords": [
     "college-erp",
