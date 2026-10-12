@@ -8,6 +8,11 @@
     { "source": "/attendance", "destination": "/pages/attendance/attendance.html" },
     { "source": "/fees", "destination": "/pages/fees/fees.html" },
     { "source": "/results", "destination": "/pages/results/results.html" },
-    { "source": "/settings", "destination": "/pages/settings/settings.html" }
+    { "source": "/settings", "destination": "/pages/settings/settings.html" },
+    { "source": "/frontend/pages/:path*", "destination": "/pages/:path*" },
+    { "source": "/frontend/js/:path*", "destination": "/js/:path*" },
+    { "source": "/frontend/css/:path*", "destination": "/css/:path*" },
+    { "source": "/frontend/public/:path*", "destination": "/public/:path*" }
   ]
 }
+
