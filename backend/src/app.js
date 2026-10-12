@@ -23,6 +23,9 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
+// Trust reverse proxy (e.g. Render, Heroku) for correct client IP detection in rate limiters
+app.set("trust proxy", 1);
+
 // ==========================================
 // 1. Security & Core Middleware
 // ==========================================
@@ -30,19 +33,28 @@ const app = express();
 // Helmet for secure HTTP headers
 app.use(helmet());
 
-// CORS configuration
-const allowedOrigins = [
-    process.env.CLIENT_URL,
+// CORS configuration supporting dynamic origin, comma-separated domains, and wildcard
+const defaultOrigins = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "http://localhost:3000"
-].filter(Boolean);
+];
+
+const configuredOrigins = (process.env.CLIENT_URL || "")
+    .split(",")
+    .map(url => url.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+
+const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
 
 app.use(
     cors({
         origin: function (origin, callback) {
-            // Allow requests with no origin (like mobile apps, curl, postman) or matching origins
-            if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+            // Allow requests with no origin (e.g., curl, mobile apps, direct browser address bar)
+            if (!origin || process.env.NODE_ENV !== "production") {
+                return callback(null, true);
+            }
+            if (process.env.CLIENT_URL === "*" || allowedOrigins.includes(origin)) {
                 return callback(null, true);
             }
             return callback(new Error("CORS policy violation: Not allowed by CORS"));
@@ -59,21 +71,38 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ==========================================
-// 2. Health Check Endpoint
+// 2. Health Check & Root Endpoints
 // ==========================================
 
-app.get("/api/health", publicLimiter, (req, res) => {
-    return successResponse(res, 200, "College ERP backend is running", {
-        status: "healthy",
-        uptime: process.uptime(),
-        timestamp: new Date().toISOString(),
-        database: isDBConnected() ? "connected" : "disconnected"
-    });
-});
+const healthHandler = (req, res) => {
+    const dbConnected = isDBConnected();
+    const statusCode = dbConnected ? 200 : 503;
+    const nowIso = new Date().toISOString();
 
-// Root welcome
-app.get("/", publicLimiter, (req, res) => {
-    return successResponse(res, 200, "College ERP API is online. Refer to /docs for API documentation.");
+    return res.status(statusCode).json({
+        success: dbConnected,
+        status: dbConnected ? "OK" : "DEGRADED",
+        message: "College ERP Backend is running",
+        environment: process.env.NODE_ENV || "development",
+        database: {
+            status: dbConnected ? "connected" : "disconnected"
+        },
+        timestamp: nowIso,
+        data: {
+            status: dbConnected ? "healthy" : "unhealthy",
+            uptime: process.uptime(),
+            timestamp: nowIso,
+            database: dbConnected ? "connected" : "disconnected"
+        }
+    });
+};
+
+// Mount health check on both /api/health and /health for Render monitoring
+app.get(["/api/health", "/health"], publicLimiter, healthHandler);
+
+// Root & API welcome
+app.get(["/", "/api"], publicLimiter, (req, res) => {
+    return successResponse(res, 200, "College ERP API is online. Refer to /api/health for system status.");
 });
 
 // ==========================================

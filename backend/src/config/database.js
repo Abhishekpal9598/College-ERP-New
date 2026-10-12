@@ -8,9 +8,11 @@ let memoryServerInstance = null;
  */
 const connectDB = async () => {
     const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/college_erp";
+    const dbName = process.env.DB_NAME || "college_erp";
 
     try {
         await mongoose.connect(mongoURI, {
+            dbName,
             serverSelectionTimeoutMS: 5000
         });
         console.log(`[MongoDB] Connected to database: ${mongoose.connection.name}`);
