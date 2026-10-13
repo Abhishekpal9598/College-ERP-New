@@ -25,7 +25,14 @@ function loadSettings() {
     if (adminName) adminName.value = savedAdmin === "Admin" ? "" : savedAdmin;
 }
 
-loadSettings();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) loadSettings();
+    });
+} else {
+    loadSettings();
+}
 
 // ==========================
 // Save Settings

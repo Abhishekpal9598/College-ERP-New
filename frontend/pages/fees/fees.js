@@ -182,5 +182,15 @@ if (searchFee) {
     });
 }
 
-loadStudents();
-loadFees();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) {
+            loadStudents();
+            loadFees();
+        }
+    });
+} else {
+    loadStudents();
+    loadFees();
+}

@@ -190,4 +190,11 @@ async function deleteResultRecord(id) {
 }
 window.deleteResultRecord = deleteResultRecord;
 
-loadStudents();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) loadStudents();
+    });
+} else {
+    loadStudents();
+}

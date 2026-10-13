@@ -258,5 +258,11 @@ if (saveTeacherBtn) {
     });
 }
 
-// Initial Load
-loadStudentsAndAttendance();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) loadStudentsAndAttendance();
+    });
+} else {
+    loadStudentsAndAttendance();
+}

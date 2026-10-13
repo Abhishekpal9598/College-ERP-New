@@ -528,5 +528,17 @@ async function updateDashboard() {
     }
 }
 
-// Initial Run
-updateDashboard();
+// Initial Run gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) {
+            try {
+                const rawUser = localStorage.getItem("user");
+                if (rawUser) currentUser = JSON.parse(rawUser);
+            } catch {}
+            updateDashboard();
+        }
+    });
+} else {
+    updateDashboard();
+}

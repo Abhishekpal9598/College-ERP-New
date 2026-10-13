@@ -111,16 +111,34 @@
         <a href="/pages/login/login.html" id="manual-link" class="btn-launch">Open Login Page</a>
     </div>
 
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth-guard.js"></script>
     <script>
         (function() {
-            const token = localStorage.getItem("token") || localStorage.getItem("jwt_token");
-            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true" || !!token;
-            
-            const targetPage = isLoggedIn ? "/pages/dashboard/dashboard.html" : "/pages/login/login.html";
+            const statusText = document.getElementById("status-text");
 
-            setTimeout(() => {
-                window.location.replace(targetPage);
-            }, 300);
+            // 1. Unauthenticated users: Go directly to Login page
+            if (typeof hasValidToken !== "function" || !hasValidToken()) {
+                if (typeof clearAuthState === "function") clearAuthState();
+                window.location.replace("/pages/login/login.html");
+                return;
+            }
+
+            // 2. Existing session: Verify with backend before dashboard redirect
+            if (statusText) statusText.textContent = "Verifying session with secure server...";
+
+            verifySession().then(result => {
+                if (result && result.authenticated) {
+                    window.location.replace("/pages/dashboard/dashboard.html");
+                } else {
+                    if (typeof clearAuthState === "function") clearAuthState();
+                    window.location.replace("/pages/login/login.html");
+                }
+            }).catch(() => {
+                if (typeof clearAuthState === "function") clearAuthState();
+                window.location.replace("/pages/login/login.html");
+            });
         })();
     </script>
 </body>

@@ -86,18 +86,22 @@ async function apiFetch(endpoint, options = {}) {
         const response = await fetch(targetUrl, config);
         const data = await response.json().catch(() => null);
 
-        // Handle 401 Unauthorized (session expired or invalid token)
+        // Handle 401 Unauthorized (session expired, invalid, or revoked token)
         if (response.status === 401 && !endpoint.includes("/auth/login")) {
-            if (typeof localStorage !== "undefined") {
+            if (typeof window !== "undefined" && typeof window.clearAuthState === "function") {
+                window.clearAuthState();
+            } else if (typeof localStorage !== "undefined") {
                 localStorage.removeItem("token");
+                localStorage.removeItem("jwt_token");
                 localStorage.removeItem("user");
                 localStorage.removeItem("isLoggedIn");
-            }
-            if (typeof alert === "function") {
-                alert("Your session has expired. Please login again.");
+                localStorage.removeItem("adminName");
             }
             if (typeof window !== "undefined" && window.location) {
-                window.location.href = "/pages/login/login.html";
+                const currentPath = window.location.pathname || "";
+                if (!currentPath.includes("login")) {
+                    window.location.replace("/pages/login/login.html");
+                }
             }
             return { success: false, message: "Session expired" };
         }

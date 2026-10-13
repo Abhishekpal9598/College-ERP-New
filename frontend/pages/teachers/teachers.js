@@ -189,5 +189,11 @@ if (searchInput) {
     });
 }
 
-// Initial Load
-fetchAndDisplayTeachers();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) fetchAndDisplayTeachers();
+    });
+} else {
+    fetchAndDisplayTeachers();
+}

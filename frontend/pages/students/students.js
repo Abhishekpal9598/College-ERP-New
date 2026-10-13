@@ -205,5 +205,11 @@ if (searchStudent) {
     });
 }
 
-// Initial Load
-fetchAndDisplayStudents();
+// Initial Load gated on session verification
+if (typeof requireAuth === "function") {
+    requireAuth().then(authenticated => {
+        if (authenticated) fetchAndDisplayStudents();
+    });
+} else {
+    fetchAndDisplayStudents();
+}
