@@ -16,15 +16,27 @@ const getApiBaseUrl = () => {
         }
     }
     // In production, fallback to Render backend API endpoint
-    return "https://college-erp-api.onrender.com/api";
+    return "https://college-erp-new-2-ki-project-mere.onrender.com/api";
 };
 
 /**
- * Core fetch wrapper with auth header attachment and graceful offline handling
+ * Core fetch wrapper with auth header attachment, endpoint normalization, and graceful offline handling
  */
 async function apiFetch(endpoint, options = {}) {
     const apiBase = getApiBaseUrl();
-    const token = localStorage.getItem("token");
+    const token = typeof localStorage !== "undefined" ? localStorage.getItem("token") : null;
+
+    // Normalize endpoint to prevent duplicate /api prefixes and ensure leading slash
+    let cleanEndpoint = endpoint || "/";
+    if (cleanEndpoint.startsWith("/api/")) {
+        cleanEndpoint = cleanEndpoint.substring(4);
+    } else if (cleanEndpoint === "/api") {
+        cleanEndpoint = "/";
+    } else if (!cleanEndpoint.startsWith("/")) {
+        cleanEndpoint = `/${cleanEndpoint}`;
+    }
+
+    const targetUrl = `${apiBase.replace(/\/+$/, "")}${cleanEndpoint}`;
 
     const defaultHeaders = {
         "Content-Type": "application/json"
@@ -43,16 +55,22 @@ async function apiFetch(endpoint, options = {}) {
     };
 
     try {
-        const response = await fetch(`${apiBase}${endpoint}`, config);
+        const response = await fetch(targetUrl, config);
         const data = await response.json().catch(() => null);
 
         // Handle 401 Unauthorized (session expired or invalid token)
         if (response.status === 401 && !endpoint.includes("/auth/login")) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            localStorage.removeItem("isLoggedIn");
-            alert("Your session has expired. Please login again.");
-            window.location.href = "../login/login.html";
+            if (typeof localStorage !== "undefined") {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                localStorage.removeItem("isLoggedIn");
+            }
+            if (typeof alert === "function") {
+                alert("Your session has expired. Please login again.");
+            }
+            if (typeof window !== "undefined" && window.location) {
+                window.location.href = "/pages/login/login.html";
+            }
             return { success: false, message: "Session expired" };
         }
 
@@ -71,7 +89,7 @@ async function apiFetch(endpoint, options = {}) {
         return {
             success: false,
             offline: true,
-            message: "Backend server is unreachable (offline). Please ensure the backend server is running on http://localhost:5000"
+            message: "Backend server is unreachable. Please ensure the backend server is running and accessible."
         };
     }
 }
@@ -243,10 +261,29 @@ const resultAPI = {
 };
 
 // Expose globally
-window.authAPI = authAPI;
-window.dashboardAPI = dashboardAPI;
-window.studentAPI = studentAPI;
-window.teacherAPI = teacherAPI;
-window.attendanceAPI = attendanceAPI;
-window.feeAPI = feeAPI;
-window.resultAPI = resultAPI;
+if (typeof window !== "undefined") {
+    window.authAPI = authAPI;
+    window.dashboardAPI = dashboardAPI;
+    window.studentAPI = studentAPI;
+    window.teacherAPI = teacherAPI;
+    window.attendanceAPI = attendanceAPI;
+    window.feeAPI = feeAPI;
+    window.resultAPI = resultAPI;
+    window.getApiBaseUrl = getApiBaseUrl;
+    window.apiFetch = apiFetch;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        getApiBaseUrl,
+        apiFetch,
+        authAPI,
+        dashboardAPI,
+        studentAPI,
+        teacherAPI,
+        attendanceAPI,
+        feeAPI,
+        resultAPI
+    };
+}
+

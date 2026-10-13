@@ -2,6 +2,11 @@ const http = require('http');
 
 const PORT = 5500;
 const filesToTest = [
+    '/',
+    '/login',
+    '/dashboard',
+    '/login/login.html',
+    '/dashboard/dashboard.html',
     '/public/index.html',
     '/pages/login/login.html',
     '/pages/login/login.css',

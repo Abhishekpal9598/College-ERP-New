@@ -15,10 +15,8 @@ const startServer = async () => {
     try {
         await connectDB();
 
-        // Run seed script only in development, testing, or when explicitly requested
-        if (process.env.SEED_DATA === "true" || process.env.NODE_ENV !== "production") {
-            await seedAdminUsers();
-        }
+        // Safe, idempotent administrative user and baseline verification
+        await seedAdminUsers();
 
         serverInstance = app.listen(PORT, () => {
             console.log(`[Server] College ERP Backend running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);

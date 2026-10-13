@@ -33,8 +33,9 @@ app.set("trust proxy", 1);
 // Helmet for secure HTTP headers
 app.use(helmet());
 
-// CORS configuration supporting dynamic origin, comma-separated domains, and wildcard
+// CORS configuration allowing exact production Vercel domain, configured origins, and local development
 const defaultOrigins = [
+    "https://college-erp-new-798m.vercel.app",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "http://localhost:3000"
@@ -47,21 +48,33 @@ const configuredOrigins = (process.env.CLIENT_URL || "")
 
 const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
 
-app.use(
-    cors({
-        origin: function (origin, callback) {
-            // Allow requests with no origin (e.g., curl, mobile apps, direct browser address bar)
-            if (!origin || process.env.NODE_ENV !== "production") {
-                return callback(null, true);
-            }
-            if (process.env.CLIENT_URL === "*" || allowedOrigins.includes(origin)) {
-                return callback(null, true);
-            }
-            return callback(new Error("CORS policy violation: Not allowed by CORS"));
-        },
-        credentials: true
-    })
-);
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (e.g. curl, health checks, server-to-server)
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        const normalizedOrigin = origin.replace(/\/+$/, "");
+        if (allowedOrigins.includes(normalizedOrigin)) {
+            return callback(null, true);
+        }
+
+        // In non-production development environments, allow localhost
+        if (process.env.NODE_ENV !== "production" && (origin.includes("localhost") || origin.includes("127.0.0.1"))) {
+            return callback(null, true);
+        }
+
+        // Disallow origin gracefully without throwing an unhandled 500 error
+        return callback(null, false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 
 // General API Rate Limiter
 app.use("/api", apiLimiter);

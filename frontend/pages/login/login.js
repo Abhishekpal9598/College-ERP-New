@@ -4,7 +4,7 @@ console.log("College ERP Login Loaded");
 // Already Logged In Check
 // =========================
 if (typeof isAuthenticated === "function" && isAuthenticated()) {
-    window.location.href = "../dashboard/dashboard.html";
+    window.location.href = "/pages/dashboard/dashboard.html";
 }
 
 // =========================
@@ -55,12 +55,12 @@ if (loginForm) {
                 localStorage.setItem("adminName", response.data.user.name || "Administrator");
 
                 alert("Login Successful!");
-                window.location.href = "../dashboard/dashboard.html";
+                window.location.href = "/pages/dashboard/dashboard.html";
             } else {
                 alert(response.message || "Invalid Email or Password!");
             }
         } catch (err) {
-            alert("Unable to reach backend server. Please ensure backend is running on http://localhost:5000");
+            alert(err && err.message ? err.message : "Unable to reach backend server. Please verify your connection.");
         }
     });
 }

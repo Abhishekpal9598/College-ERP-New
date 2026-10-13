@@ -2,29 +2,42 @@ const User = require("../models/User");
 const Student = require("../models/Student");
 const Teacher = require("../models/Teacher");
 
+// Concurrency lock to prevent startup race conditions
+let isSeedingInProgress = false;
+
 /**
- * Seed initial administrative users, 25 students, and initial faculty
+ * Seed initial administrative users, baseline student roster, and initial faculty
+ * Idempotent: Never deletes or overwrites existing user accounts or data
  */
 const seedAdminUsers = async () => {
+    if (isSeedingInProgress) {
+        return;
+    }
+    isSeedingInProgress = true;
+
     try {
-        // 1. Seed Users
+        // 1. Seed Administrative Users
+        const defaultAdminEmail = (process.env.ADMIN_EMAIL || "admin@college.erp").toLowerCase().trim();
+        const defaultAdminPassword = process.env.ADMIN_PASSWORD || "Password@123";
+        const defaultAdminName = process.env.ADMIN_NAME || "System Administrator";
+
         const seedUsers = [
             {
-                name: "System Administrator",
-                email: "admin@college.erp",
-                password: "Password@123",
+                name: defaultAdminName,
+                email: defaultAdminEmail,
+                password: defaultAdminPassword,
                 role: "admin"
             },
             {
                 name: "Abhishek Pal",
-                email: "abhipal895@gmail.com",
-                password: "95982536",
+                email: (process.env.ABHISHEK_EMAIL || "abhipal895@gmail.com").toLowerCase().trim(),
+                password: process.env.ABHISHEK_PASSWORD || "95982536",
                 role: "admin"
             },
             {
                 name: "Ankush",
-                email: "ankushddu7983@gmail.com",
-                password: "12345678",
+                email: (process.env.ANKUSH_EMAIL || "ankushddu7983@gmail.com").toLowerCase().trim(),
+                password: process.env.ANKUSH_PASSWORD || "12345678",
                 role: "admin"
             }
         ];
@@ -32,13 +45,11 @@ const seedAdminUsers = async () => {
         for (const userData of seedUsers) {
             const existing = await User.findOne({ email: userData.email });
             if (!existing) {
+                // Password hashing is performed automatically by User model pre-save hook using bcrypt
                 await User.create(userData);
-                console.log(`[Seed] Seeded user: ${userData.email}`);
-            } else {
-                // Ensure password hash matches designated password
-                existing.password = userData.password;
-                await existing.save();
+                console.log(`[Seed] Seeded initial administrative account: ${userData.email}`);
             }
+            // If user already exists, preserve the account as-is without overwriting
         }
 
         // 2. Seed 25 Students if table has fewer than 25 students
@@ -92,10 +103,10 @@ const seedAdminUsers = async () => {
                     });
                 }
             }
-            console.log(`[Seed] Seeded 25 students into database`);
+            console.log(`[Seed] Seeded baseline student roster into database`);
         }
 
-        // 3. Seed Teachers if none exist
+        // 3. Seed Teachers if fewer than 5 exist
         const currentTeacherCount = await Teacher.countDocuments();
         if (currentTeacherCount < 5) {
             const teacherRoster = [
@@ -122,10 +133,12 @@ const seedAdminUsers = async () => {
                     });
                 }
             }
-            console.log(`[Seed] Seeded initial faculty into database`);
+            console.log(`[Seed] Seeded baseline faculty into database`);
         }
     } catch (err) {
-        console.warn(`[Seed] Notice during database seeding: ${err.message}`);
+        console.warn(`[Seed] Notice during database verification: ${err.message}`);
+    } finally {
+        isSeedingInProgress = false;
     }
 };
 
