@@ -165,8 +165,39 @@ const registerAdmin = async (req, res, next) => {
             return errorResponse(res, 409, "A pending registration request already exists for this email address");
         }
 
-        // 3. Hash incoming raw invitation token with SHA-256
-        const tokenHash = emailService.hashToken(invitationToken);
+        // 3. Shared canonicalization & validation of raw invitation token
+        let canonicalToken;
+        try {
+            canonicalToken = emailService.canonicalizeToken(invitationToken);
+        } catch {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token malformed");
+            return errorResponse(res, 400, "Invalid invitation token. Please check that you copied the complete token.");
+        }
+
+        const tokenHash = emailService.hashToken(canonicalToken);
+
+        // Pre-validate invitation with granular error messages and safe category logging
+        const existingInv = await AdminInvitation.findOne({ tokenHash });
+        if (!existingInv) {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token not found");
+            return errorResponse(res, 400, "Invalid invitation token. Please check that you copied the complete token.");
+        }
+        if (existingInv.status === "used") {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token already used");
+            return errorResponse(res, 400, "This invitation token has already been used.");
+        }
+        if (existingInv.status === "revoked") {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token revoked");
+            return errorResponse(res, 400, "This invitation token has been revoked by the Super Administrator.");
+        }
+        if (existingInv.expiresAt && existingInv.expiresAt <= new Date()) {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token expired");
+            return errorResponse(res, 400, "This invitation token has expired.");
+        }
+        if (existingInv.recipientEmail && existingInv.recipientEmail.toLowerCase().trim() !== normalizedEmail) {
+            console.warn("[AdminRegistrationAudit] Registration rejected: Recipient email mismatch");
+            return errorResponse(res, 400, "This invitation token is reserved for a specific email address. Please register using your designated official email.");
+        }
 
         // 4. Hash password explicitly via passwordService
         const hashedPassword = await passwordService.hashPassword(password);
@@ -182,7 +213,7 @@ const registerAdmin = async (req, res, next) => {
                 // Find and atomically consume invitation token
                 const invitation = await AdminInvitation.findOneAndUpdate(
                     {
-                        tokenHash,
+                        _id: existingInv._id,
                         status: "active",
                         expiresAt: { $gt: new Date() },
                         $or: [
@@ -201,7 +232,7 @@ const registerAdmin = async (req, res, next) => {
                 );
 
                 if (!invitation) {
-                    throw new Error("INVITATION_INVALID");
+                    throw new Error("INVITATION_ALREADY_USED");
                 }
 
                 const regRequest = new AdminRegistrationRequest({
@@ -243,8 +274,9 @@ const registerAdmin = async (req, res, next) => {
                 });
             });
         } catch (err) {
-            if (err.message === "INVITATION_INVALID") {
-                return errorResponse(res, 400, "Invalid, expired, or already used invitation token.");
+            if (err.message === "INVITATION_ALREADY_USED") {
+                console.warn("[AdminRegistrationAudit] Registration rejected: Invitation token already used");
+                return errorResponse(res, 400, "This invitation token has already been used.");
             }
             throw err;
         }

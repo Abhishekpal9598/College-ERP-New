@@ -5,13 +5,41 @@
 
 const getApiBaseUrl = () => {
     if (typeof window !== "undefined") {
-        if (window.__API_URL__) return window.__API_URL__.replace(/\/+$/, "");
+        const isLocalClient = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+        // 1. Explicit window override
+        if (window.__API_URL__) {
+            const isLocalTarget = window.__API_URL__.includes("localhost") || window.__API_URL__.includes("127.0.0.1");
+            const isMixed = window.location.protocol === "https:" && window.__API_URL__.startsWith("http://");
+            if (!((!isLocalClient && isLocalTarget) || isMixed)) {
+                return window.__API_URL__.replace(/\/+$/, "");
+            }
+        }
+
+        // 2. LocalStorage override with stale localhost & mixed-content protection
         const storedUrl = localStorage.getItem("API_URL");
-        if (storedUrl) return storedUrl.replace(/\/+$/, "");
-        if (window.APP_CONFIG && window.APP_CONFIG.API_URL) return window.APP_CONFIG.API_URL.replace(/\/+$/, "");
-        
-        // In local development, connect to local backend on port 5000
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        if (storedUrl) {
+            const isLocalTarget = storedUrl.includes("localhost") || storedUrl.includes("127.0.0.1");
+            const isMixed = window.location.protocol === "https:" && storedUrl.startsWith("http://");
+            // If running on production/HTTPS and stored URL points to localhost or insecure http, purge it
+            if ((!isLocalClient && isLocalTarget) || isMixed) {
+                localStorage.removeItem("API_URL");
+            } else {
+                return storedUrl.replace(/\/+$/, "");
+            }
+        }
+
+        // 3. Application configuration
+        if (window.APP_CONFIG && window.APP_CONFIG.API_URL) {
+            const isLocalTarget = window.APP_CONFIG.API_URL.includes("localhost") || window.APP_CONFIG.API_URL.includes("127.0.0.1");
+            const isMixed = window.location.protocol === "https:" && window.APP_CONFIG.API_URL.startsWith("http://");
+            if (!((!isLocalClient && isLocalTarget) || isMixed)) {
+                return window.APP_CONFIG.API_URL.replace(/\/+$/, "");
+            }
+        }
+
+        // 4. In local development, connect to local backend on port 5000
+        if (isLocalClient) {
             return "http://localhost:5000/api";
         }
     }

@@ -5,14 +5,17 @@ console.log("College ERP Admin Registration Loaded");
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const inviteParam = urlParams.get("invite") || urlParams.get("token");
-    const emailParam = urlParams.get("email");
+    const inviteParam = (urlParams.get("invite") || urlParams.get("token") || "").trim();
+    const emailParam = (urlParams.get("email") || "").trim();
 
-    if (inviteParam) {
-        const tokenInput = document.getElementById("invitationToken");
-        if (tokenInput) {
+    const tokenInput = document.getElementById("invitationToken");
+    if (tokenInput) {
+        if (inviteParam) {
             tokenInput.value = inviteParam;
         }
+        tokenInput.addEventListener("blur", () => {
+            tokenInput.value = tokenInput.value.trim();
+        });
     }
 
     if (emailParam) {

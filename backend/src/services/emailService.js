@@ -11,25 +11,47 @@ const crypto = require("crypto");
 const https = require("https");
 
 /**
- * Generate 32-byte cryptographically secure random token and its SHA-256 hash
+ * Shared canonicalization and validation for cryptographic tokens.
+ * - Trims leading and trailing whitespace.
+ * - Preserves the generated token's canonical character format (64-character lowercase hexadecimal).
+ * - Rejects malformed tokens (non-string, wrong length, uppercase or non-hex characters).
+ *
+ * @param {string} rawToken
+ * @returns {string} canonical token string
+ * @throws {Error} if token is missing, not a string, or malformed
+ */
+const canonicalizeToken = (rawToken) => {
+    if (!rawToken || typeof rawToken !== "string") {
+        throw new Error("MALFORMED_TOKEN");
+    }
+    const trimmed = rawToken.trim();
+    // Validate canonical format: exactly 64 lowercase hexadecimal characters [0-9a-f]
+    if (!/^[0-9a-f]{64}$/.test(trimmed)) {
+        throw new Error("MALFORMED_TOKEN");
+    }
+    return trimmed;
+};
+
+/**
+ * Generate 32-byte cryptographically secure random token and its SHA-256 hash.
+ * Enforces canonical character format via shared canonicalizeToken.
  * @returns {{ rawToken: string, tokenHash: string }}
  */
 const generateSecureToken = () => {
-    const rawToken = crypto.randomBytes(32).toString("hex");
+    const rawToken = canonicalizeToken(crypto.randomBytes(32).toString("hex"));
     const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
     return { rawToken, tokenHash };
 };
 
 /**
- * Hash raw token using SHA-256
+ * Hash raw token using SHA-256 after shared canonicalization.
+ * Rejects malformed tokens before hashing.
  * @param {string} rawToken
  * @returns {string}
  */
 const hashToken = (rawToken) => {
-    if (!rawToken || typeof rawToken !== "string") {
-        throw new Error("Raw token string is required for hashing");
-    }
-    return crypto.createHash("sha256").update(rawToken).digest("hex");
+    const canonical = canonicalizeToken(rawToken);
+    return crypto.createHash("sha256").update(canonical).digest("hex");
 };
 
 /**
@@ -185,6 +207,7 @@ const sendPasswordResetEmail = async (email, rawToken) => {
 };
 
 module.exports = {
+    canonicalizeToken,
     generateSecureToken,
     hashToken,
     isEmailProviderConfigured,

@@ -70,7 +70,7 @@ const seedAdminUsers = async () => {
             // If user already exists, preserve the account as-is without overwriting
         }
 
-        // Verify and promote only the primary owner account if configured
+        // Verify and promote only the primary owner account if explicitly configured via PRIMARY_SUPER_ADMIN_EMAIL
         const primarySuperAdminEmail = (process.env.PRIMARY_SUPER_ADMIN_EMAIL || "").toLowerCase().trim();
         if (!primarySuperAdminEmail) {
             console.warn("[Security] PRIMARY_SUPER_ADMIN_EMAIL environment variable is not configured. No super_admin promotion performed.");
@@ -78,10 +78,11 @@ const seedAdminUsers = async () => {
             const primaryUser = await User.findOne({ email: primarySuperAdminEmail });
             if (!primaryUser) {
                 console.warn(`[Security] PRIMARY_SUPER_ADMIN_EMAIL '${primarySuperAdminEmail}' does not match any existing account. Fail-safe active.`);
+            } else if (!primaryUser.isEmailVerified) {
+                console.warn(`[Security] Account '${primarySuperAdminEmail}' is not email-verified. super_admin promotion blocked.`);
             } else if (primaryUser.role !== "super_admin") {
                 primaryUser.role = "super_admin";
                 primaryUser.status = "active";
-                primaryUser.isEmailVerified = true;
                 await primaryUser.save();
                 console.log(`[Security] Verified primary owner account promoted to super_admin: ${primarySuperAdminEmail}`);
             }

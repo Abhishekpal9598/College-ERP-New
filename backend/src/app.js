@@ -34,9 +34,10 @@ app.set("trust proxy", 1);
 // Helmet for secure HTTP headers
 app.use(helmet());
 
-// CORS configuration allowing exact production Vercel domain, configured origins, and local development
+// CORS configuration allowing exact production Vercel domain, Vercel preview/deployment domains for College ERP, configured origins, and local development
 const defaultOrigins = [
     "https://college-erp-new-798m.vercel.app",
+    "https://college-erp-new.vercel.app",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "http://localhost:3000"
@@ -49,6 +50,16 @@ const configuredOrigins = (process.env.CLIENT_URL || "")
 
 const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
 
+const isAllowedVercelOrigin = (origin) => {
+    // Allows College ERP production, preview, and deployment domains on Vercel
+    // Matches https://college-erp-new.vercel.app, https://college-erp-new-*.vercel.app,
+    // and https://*-abhishekpal9598s-projects.vercel.app
+    return (
+        /^https:\/\/college-erp-new(-[a-z0-9-]+)?\.vercel\.app$/i.test(origin) ||
+        /^https:\/\/[a-z0-9-]+-abhishekpal9598s-projects\.vercel\.app$/i.test(origin)
+    );
+};
+
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (e.g. curl, health checks, server-to-server)
@@ -57,7 +68,7 @@ const corsOptions = {
         }
 
         const normalizedOrigin = origin.replace(/\/+$/, "");
-        if (allowedOrigins.includes(normalizedOrigin)) {
+        if (allowedOrigins.includes(normalizedOrigin) || isAllowedVercelOrigin(normalizedOrigin)) {
             return callback(null, true);
         }
 
