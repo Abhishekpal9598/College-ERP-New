@@ -182,7 +182,7 @@ if (searchFee) {
     });
 }
 
-// Initial Load gated on session verification
+// Initial Load strictly gated on session verification
 if (typeof requireAuth === "function") {
     requireAuth().then(authenticated => {
         if (authenticated) {
@@ -190,7 +190,4 @@ if (typeof requireAuth === "function") {
             loadFees();
         }
     });
-} else {
-    loadStudents();
-    loadFees();
 }

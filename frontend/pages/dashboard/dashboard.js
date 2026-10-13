@@ -1,11 +1,5 @@
 console.log("Dashboard Loaded");
 
-// =========================
-// Login Check
-// =========================
-if (typeof requireAuth === "function") {
-    requireAuth();
-}
 
 // Current user state
 let currentUser = null;
@@ -528,7 +522,7 @@ async function updateDashboard() {
     }
 }
 
-// Initial Run gated on session verification
+// Initial Run strictly gated on session verification
 if (typeof requireAuth === "function") {
     requireAuth().then(authenticated => {
         if (authenticated) {
@@ -539,6 +533,4 @@ if (typeof requireAuth === "function") {
             updateDashboard();
         }
     });
-} else {
-    updateDashboard();
 }

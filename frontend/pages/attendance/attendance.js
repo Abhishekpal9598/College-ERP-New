@@ -258,11 +258,9 @@ if (saveTeacherBtn) {
     });
 }
 
-// Initial Load gated on session verification
+// Initial Load strictly gated on session verification
 if (typeof requireAuth === "function") {
     requireAuth().then(authenticated => {
         if (authenticated) loadStudentsAndAttendance();
     });
-} else {
-    loadStudentsAndAttendance();
 }

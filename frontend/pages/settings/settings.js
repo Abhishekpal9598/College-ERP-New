@@ -25,37 +25,33 @@ function loadSettings() {
     if (adminName) adminName.value = savedAdmin === "Admin" ? "" : savedAdmin;
 }
 
-// Initial Load gated on session verification
+// Initial Load strictly gated on session verification
 if (typeof requireAuth === "function") {
     requireAuth().then(authenticated => {
-        if (authenticated) loadSettings();
-    });
-} else {
-    loadSettings();
-}
+        if (authenticated) {
+            loadSettings();
 
-// ==========================
-// Save Settings
-// ==========================
+            if (settingsForm) {
+                settingsForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
 
-if (settingsForm) {
-    settingsForm.addEventListener("submit", function (e) {
-        e.preventDefault();
+                    const college = collegeName.value.trim();
+                    const admin = adminName.value.trim();
 
-        const college = collegeName.value.trim();
-        const admin = adminName.value.trim();
+                    if (college === "" || admin === "") {
+                        alert("Please fill all fields.");
+                        return;
+                    }
 
-        if (college === "" || admin === "") {
-            alert("Please fill all fields.");
-            return;
+                    localStorage.setItem("collegeName", college);
+                    localStorage.setItem("adminName", admin);
+
+                    if (showCollege) showCollege.textContent = college;
+                    if (showAdmin) showAdmin.textContent = admin;
+
+                    alert("Settings Saved Successfully!");
+                });
+            }
         }
-
-        localStorage.setItem("collegeName", college);
-        localStorage.setItem("adminName", admin);
-
-        if (showCollege) showCollege.textContent = college;
-        if (showAdmin) showAdmin.textContent = admin;
-
-        alert("Settings Saved Successfully!");
     });
 }

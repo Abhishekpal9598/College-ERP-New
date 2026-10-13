@@ -158,9 +158,27 @@ function verifySession() {
 }
 
 /**
+ * Unhides protected page content once authentication is fully verified.
+ * Removes the initial hiding style block and ensures body is visible.
+ */
+function showProtectedContent() {
+    if (typeof document !== "undefined") {
+        const style = document.getElementById("auth-guard-css");
+        if (style && style.parentNode) {
+            style.parentNode.removeChild(style);
+        }
+        if (document.body) {
+            document.body.style.display = "";
+            document.body.style.visibility = "visible";
+        }
+    }
+}
+
+/**
  * Route protection guard for authenticated pages.
  * 1. Synchronously checks hasValidToken(). If invalid, immediately redirects to /pages/login/login.html.
- * 2. Asynchronously verifies session with backend GET /api/auth/me. If invalid, redirects to /pages/login/login.html.
+ * 2. Asynchronously verifies session with backend GET /api/auth/me.
+ * 3. Keeps protected DOM strictly hidden until backend verification succeeds.
  *
  * @returns {Promise<boolean>} resolves to true if verified, false if redirected
  */
@@ -177,7 +195,7 @@ function requireAuth() {
     }
 
     return verifySession().then(result => {
-        if (!result.authenticated) {
+        if (!result || !result.authenticated) {
             clearAuthState();
             if (typeof window !== "undefined" && window.location) {
                 const currentPath = window.location.pathname || "";
@@ -187,7 +205,19 @@ function requireAuth() {
             }
             return false;
         }
+
+        // Authentication verified by backend: Reveal protected DOM
+        showProtectedContent();
         return true;
+    }).catch(() => {
+        clearAuthState();
+        if (typeof window !== "undefined" && window.location) {
+            const currentPath = window.location.pathname || "";
+            if (!currentPath.includes("login")) {
+                window.location.replace("/pages/login/login.html");
+            }
+        }
+        return false;
     });
 }
 
@@ -216,6 +246,7 @@ if (typeof window !== "undefined") {
     window.isAuthenticated = isAuthenticated;
     window.verifySession = verifySession;
     window.requireAuth = requireAuth;
+    window.showProtectedContent = showProtectedContent;
     window.logout = logout;
 }
 
@@ -227,6 +258,7 @@ if (typeof module !== "undefined" && module.exports) {
         isAuthenticated,
         verifySession,
         requireAuth,
+        showProtectedContent,
         logout
     };
 }
