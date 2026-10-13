@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const passwordService = require("../services/passwordService");
 
 const userSchema = new mongoose.Schema(
     {
@@ -23,8 +23,56 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["admin", "teacher"],
+            enum: ["super_admin", "admin", "admission_admin", "accountant", "hr_admin", "teacher"],
             default: "admin"
+        },
+        status: {
+            type: String,
+            enum: ["active", "pending", "rejected", "suspended"],
+            default: "active"
+        },
+        collegeName: {
+            type: String,
+            trim: true,
+            default: null
+        },
+        phone: {
+            type: String,
+            trim: true,
+            default: null
+        },
+        permissions: {
+            type: [String],
+            default: []
+        },
+        isEmailVerified: {
+            type: Boolean,
+            default: true // Preserves backward compatibility for existing users
+        },
+        emailVerificationTokenHash: {
+            type: String,
+            default: null
+        },
+        emailVerificationExpires: {
+            type: Date,
+            default: null
+        },
+        resetPasswordTokenHash: {
+            type: String,
+            default: null
+        },
+        resetPasswordExpires: {
+            type: Date,
+            default: null
+        },
+        approvedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null
+        },
+        approvedAt: {
+            type: Date,
+            default: null
         }
     },
     {
@@ -32,12 +80,22 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-// Hash password before save if modified
+// Hash password before save if modified and not already hashed
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
+
+    // Explicit bypass if flagged as pre-hashed
+    if (this.$locals && this.$locals.isPreHashed) {
+        return next();
+    }
+
+    // Defense-in-depth: If password is already a valid bcrypt hash, do not double-hash
+    if (passwordService.isBcryptHash(this.password)) {
+        return next();
+    }
+
     try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        this.password = await passwordService.hashPassword(this.password);
         next();
     } catch (err) {
         next(err);
@@ -46,13 +104,15 @@ userSchema.pre("save", async function (next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.password);
+    return passwordService.comparePassword(candidatePassword, this.password);
 };
 
-// Remove password from JSON representation
+// Remove password and sensitive security tokens from JSON representation
 userSchema.set("toJSON", {
     transform: function (doc, ret) {
         delete ret.password;
+        delete ret.emailVerificationTokenHash;
+        delete ret.resetPasswordTokenHash;
         delete ret.__v;
         return ret;
     }

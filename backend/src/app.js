@@ -20,6 +20,7 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const feeRoutes = require("./routes/feeRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -129,6 +130,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/fees", feeRoutes);
 app.use("/api/results", resultRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ==========================================
 // 4. Error Handling

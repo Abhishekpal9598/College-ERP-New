@@ -52,6 +52,23 @@ const seedAdminUsers = async () => {
             // If user already exists, preserve the account as-is without overwriting
         }
 
+        // Verify and promote only the primary owner account if configured
+        const primarySuperAdminEmail = (process.env.PRIMARY_SUPER_ADMIN_EMAIL || "").toLowerCase().trim();
+        if (!primarySuperAdminEmail) {
+            console.warn("[Security] PRIMARY_SUPER_ADMIN_EMAIL environment variable is not configured. No super_admin promotion performed.");
+        } else {
+            const primaryUser = await User.findOne({ email: primarySuperAdminEmail });
+            if (!primaryUser) {
+                console.warn(`[Security] PRIMARY_SUPER_ADMIN_EMAIL '${primarySuperAdminEmail}' does not match any existing account. Fail-safe active.`);
+            } else if (primaryUser.role !== "super_admin") {
+                primaryUser.role = "super_admin";
+                primaryUser.status = "active";
+                primaryUser.isEmailVerified = true;
+                await primaryUser.save();
+                console.log(`[Security] Verified primary owner account promoted to super_admin: ${primarySuperAdminEmail}`);
+            }
+        }
+
         // 2. Seed 25 Students if table has fewer than 25 students
         const currentStudentCount = await Student.countDocuments();
         if (currentStudentCount < 25) {

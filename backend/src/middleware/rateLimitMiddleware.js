@@ -120,11 +120,42 @@ const apiLimiter = rateLimit({
     }
 });
 
+// 5. Strict Rate Limiter for Admin Registration
+const registerWindowMs = getEnvInt("REGISTER_RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000);
+const defaultRegisterMax = process.env.NODE_ENV === "production" ? 5 : 200;
+const registerMax = getEnvInt("REGISTER_RATE_LIMIT_MAX", defaultRegisterMax);
+
+const registerAdminLimiter = rateLimit({
+    windowMs: registerWindowMs,
+    max: registerMax,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: "Too many admin registration attempts from this IP address. Please try again after 15 minutes."
+    }
+});
+
+// 6. Strict Rate Limiter for Password Reset Requests
+const passwordResetLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: process.env.NODE_ENV === "test" ? 100 : 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: "Too many password reset requests. Please try again after 15 minutes."
+    }
+});
+
 module.exports = {
     authLimiter,
     publicLimiter,
     apiLimiter,
+    registerAdminLimiter,
+    passwordResetLimiter,
     trackFailedLogin,
     resetFailedLogin,
     getAccountLockStatus
 };
+

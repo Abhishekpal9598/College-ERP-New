@@ -6,6 +6,10 @@
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/login", "destination": "/pages/login/login.html" },
+    { "source": "/register", "destination": "/pages/register/register.html" },
+    { "source": "/register/register.html", "destination": "/pages/register/register.html" },
+    { "source": "/register.css", "destination": "/pages/register/register.css" },
+    { "source": "/register.js", "destination": "/pages/register/register.js" },
     { "source": "/dashboard", "destination": "/pages/dashboard/dashboard.html" },
     { "source": "/students", "destination": "/pages/students/students.html" },
     { "source": "/teachers", "destination": "/pages/teachers/teachers.html" },

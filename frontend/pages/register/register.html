@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College ERP - Admin Registration</title>
+    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="register-box">
+            <div class="brand-header">
+                <h1>College ERP</h1>
+                <p>College Administrator Registration</p>
+            </div>
+
+            <div class="info-banner">
+                <i class="fas fa-shield-alt"></i>
+                <span>Admin registration requires a single-use invitation token issued by the Super Administrator.</span>
+            </div>
+
+            <form id="registerForm" novalidate>
+                <div class="input-box">
+                    <label for="name"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="name" placeholder="Dr. Jane Doe / Prof. John Smith" required>
+                </div>
+
+                <div class="input-box">
+                    <label for="collegeName"><i class="fas fa-university"></i> College / Institution Name</label>
+                    <input type="text" id="collegeName" placeholder="e.g. National Institute of Engineering" required>
+                </div>
+
+                <div class="input-box">
+                    <label for="email"><i class="fas fa-envelope"></i> Official College Email</label>
+                    <input type="email" id="email" placeholder="admin@college.edu" required>
+                </div>
+
+                <div class="input-box">
+                    <label for="phone"><i class="fas fa-phone"></i> Mobile Number</label>
+                    <input type="tel" id="phone" placeholder="+91 9876543210" required>
+                </div>
+
+                <div class="input-box">
+                    <label for="invitationToken"><i class="fas fa-key"></i> Single-Use Invitation Token</label>
+                    <input type="text" id="invitationToken" placeholder="Paste 64-character token" required>
+                    <small class="hint-text">Provided by your Super Administrator</small>
+                </div>
+
+                <div class="input-box">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Min. 8 chars, Upper, Lower, Number, Special" required>
+                        <button type="button" id="togglePasswordBtn" class="toggle-pwd-btn" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye" id="pwdEyeIcon"></i>
+                        </button>
+                    </div>
+
+                    <!-- Password Strength Meter -->
+                    <div class="strength-meter">
+                        <div class="strength-bar" id="bar1"></div>
+                        <div class="strength-bar" id="bar2"></div>
+                        <div class="strength-bar" id="bar3"></div>
+                        <div class="strength-bar" id="bar4"></div>
+                    </div>
+                    <div class="strength-label" id="strengthText">Password Strength: Enter password</div>
+                </div>
+
+                <div class="input-box">
+                    <label for="confirmPassword"><i class="fas fa-check-double"></i> Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter your password" required>
+                    <div class="match-indicator" id="matchText"></div>
+                </div>
+
+                <div class="checkbox-box">
+                    <input type="checkbox" id="termsCheck" required>
+                    <label for="termsCheck">I agree to the College ERP Administrative Access Policy & Terms</label>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">
+                    <span>Submit Application</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="footer-links">
+                <p>Already an approved administrator? <a href="/pages/login/login.html">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Feedback Modal -->
+    <div id="statusModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h3 id="modalTitle">Application Submitted</h3>
+            <p id="modalMessage"></p>
+            <button id="modalActionBtn" class="modal-btn">Return to Login</button>
+        </div>
+    </div>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="register.js"></script>
+</body>
+
+</html>

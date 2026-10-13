@@ -18,6 +18,10 @@ const MIME_TYPES = {
 const ROUTE_REWRITES = {
     '/': '/index.html',
     '/login': '/pages/login/login.html',
+    '/register': '/pages/register/register.html',
+    '/register/register.html': '/pages/register/register.html',
+    '/register.css': '/pages/register/register.css',
+    '/register.js': '/pages/register/register.js',
     '/dashboard': '/pages/dashboard/dashboard.html',
     '/students': '/pages/students/students.html',
     '/teachers': '/pages/teachers/teachers.html',

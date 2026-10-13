@@ -102,6 +102,30 @@ const authAPI = {
             body: JSON.stringify({ email, password })
         });
     },
+    registerAdmin: async (adminData) => {
+        return apiFetch("/auth/register-admin", {
+            method: "POST",
+            body: JSON.stringify(adminData)
+        });
+    },
+    verifyEmail: async (token) => {
+        return apiFetch("/auth/verify-email", {
+            method: "POST",
+            body: JSON.stringify({ token })
+        });
+    },
+    forgotPassword: async (email) => {
+        return apiFetch("/auth/forgot-password", {
+            method: "POST",
+            body: JSON.stringify({ email })
+        });
+    },
+    resetPassword: async (token, newPassword, confirmPassword) => {
+        return apiFetch("/auth/reset-password", {
+            method: "POST",
+            body: JSON.stringify({ token, newPassword, confirmPassword })
+        });
+    },
     logout: async () => {
         return apiFetch("/auth/logout", {
             method: "POST"
@@ -260,9 +284,51 @@ const resultAPI = {
     }
 };
 
+// Super Admin Management API
+const adminAPI = {
+    createInvitation: async (invitationData) => {
+        return apiFetch("/admin/invitations", {
+            method: "POST",
+            body: JSON.stringify(invitationData)
+        });
+    },
+    getInvitations: async () => {
+        return apiFetch("/admin/invitations");
+    },
+    revokeInvitation: async (id) => {
+        return apiFetch(`/admin/invitations/${id}`, {
+            method: "DELETE"
+        });
+    },
+    getRegistrationRequests: async (status) => {
+        const query = status ? `?status=${encodeURIComponent(status)}` : "";
+        return apiFetch(`/admin/registration-requests${query}`);
+    },
+    getRegistrationRequestById: async (id) => {
+        return apiFetch(`/admin/registration-requests/${id}`);
+    },
+    approveRequest: async (id, approvalData = {}) => {
+        return apiFetch(`/admin/registration-requests/${id}/approve`, {
+            method: "POST",
+            body: JSON.stringify(approvalData)
+        });
+    },
+    rejectRequest: async (id, rejectionData = {}) => {
+        return apiFetch(`/admin/registration-requests/${id}/reject`, {
+            method: "POST",
+            body: JSON.stringify(rejectionData)
+        });
+    },
+    getAuditLogs: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        return apiFetch(`/admin/audit-logs${query ? `?${query}` : ""}`);
+    }
+};
+
 // Expose globally
 if (typeof window !== "undefined") {
     window.authAPI = authAPI;
+    window.adminAPI = adminAPI;
     window.dashboardAPI = dashboardAPI;
     window.studentAPI = studentAPI;
     window.teacherAPI = teacherAPI;
@@ -278,6 +344,7 @@ if (typeof module !== "undefined" && module.exports) {
         getApiBaseUrl,
         apiFetch,
         authAPI,
+        adminAPI,
         dashboardAPI,
         studentAPI,
         teacherAPI,

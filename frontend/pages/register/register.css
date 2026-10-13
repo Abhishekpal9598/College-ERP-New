@@ -1,0 +1,302 @@
+/* College ERP - Admin Registration Stylesheet */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.register-box {
+    background: #ffffff;
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.brand-header h1 {
+    text-align: center;
+    color: #341db7;
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+.brand-header p {
+    text-align: center;
+    color: #6b7280;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.info-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 22px;
+}
+
+.info-banner i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.input-box {
+    margin-bottom: 18px;
+}
+
+.input-box label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.input-box label i {
+    color: #4f46e5;
+    margin-right: 6px;
+    width: 14px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-box input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.hint-text {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 45px;
+}
+
+.toggle-pwd-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 16px;
+    padding: 6px;
+}
+
+.toggle-pwd-btn:hover {
+    color: #1f2937;
+}
+
+/* Strength Meter */
+.strength-meter {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.strength-bar {
+    height: 5px;
+    flex: 1;
+    background: #e5e7eb;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.strength-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Match Indicator */
+.match-indicator {
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.match-indicator.match {
+    color: #059669;
+}
+
+.match-indicator.mismatch {
+    color: #dc2626;
+}
+
+.checkbox-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 18px 0 22px 0;
+}
+
+.checkbox-box input {
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.checkbox-box label {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover {
+    background: #4338ca;
+}
+
+.submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.footer-links {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.footer-links a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.25);
+    animation: fadeInScale 0.25s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-icon {
+    font-size: 46px;
+    margin-bottom: 14px;
+}
+
+.modal-icon.success {
+    color: #10b981;
+}
+
+.modal-icon.error {
+    color: #ef4444;
+}
+
+.modal-card h3 {
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+.modal-card p {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+}
+
+.modal-btn {
+    padding: 10px 24px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-btn:hover {
+    background: #4338ca;
+}

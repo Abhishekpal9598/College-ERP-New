@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { errorResponse } = require("../utils/apiResponse");
-
 const tokenBlacklistService = require("../services/tokenBlacklistService");
 
 const getJwtSecret = () => {
@@ -32,6 +31,22 @@ const protect = async (req, res, next) => {
             return errorResponse(res, 401, "Invalid token. User not found.");
         }
 
+        // Verify user account status
+        if (user.status === "pending") {
+            return errorResponse(res, 403, "Your account is pending Super Administrator approval.");
+        }
+        if (user.status === "rejected") {
+            return errorResponse(res, 403, "Your registration request has been rejected.");
+        }
+        if (user.status === "suspended") {
+            return errorResponse(res, 403, "Your account has been suspended.");
+        }
+
+        // Verify email verification status
+        if (user.isEmailVerified === false) {
+            return errorResponse(res, 403, "Please verify your email address before accessing this resource.");
+        }
+
         req.user = user;
         req.token = token;
         next();
@@ -43,10 +58,50 @@ const protect = async (req, res, next) => {
     }
 };
 
+/**
+ * Role-Based Access Control Middleware
+ * super_admin has universal access across all modules
+ */
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return errorResponse(res, 403, `Forbidden. Role '${req.user ? req.user.role : "none"}' does not have access to this resource.`);
+        if (!req.user) {
+            return errorResponse(res, 403, "Forbidden. No user authenticated.");
+        }
+        // Super admin has universal access
+        if (req.user.role === "super_admin") {
+            return next();
+        }
+        if (!roles.includes(req.user.role)) {
+            return errorResponse(
+                res,
+                403,
+                `Forbidden. Role '${req.user.role}' does not have access to this resource.`
+            );
+        }
+        next();
+    };
+};
+
+/**
+ * Granular Permission-Based Access Control Middleware
+ * super_admin has universal access
+ */
+const authorizePermissions = (...permissions) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return errorResponse(res, 403, "Forbidden. No user authenticated.");
+        }
+        if (req.user.role === "super_admin") {
+            return next();
+        }
+        const userPerms = req.user.permissions || [];
+        const hasAllPermissions = permissions.every(p => userPerms.includes(p));
+        if (!hasAllPermissions) {
+            return errorResponse(
+                res,
+                403,
+                `Forbidden. Missing required permissions: ${permissions.join(", ")}`
+            );
         }
         next();
     };
@@ -54,5 +109,6 @@ const authorizeRoles = (...roles) => {
 
 module.exports = {
     protect,
-    authorizeRoles
+    authorizeRoles,
+    authorizePermissions
 };
