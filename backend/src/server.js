@@ -7,12 +7,24 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 const app = require("./app");
 const { connectDB } = require("./config/database");
 const { seedAdminUsers } = require("./services/seedService");
+const { validateEnvironment } = require("./config/envValidator");
 
 const PORT = process.env.PORT || 5000;
 let serverInstance = null;
 
 const startServer = async () => {
     try {
+        // Validate environment configuration
+        const envCheck = validateEnvironment();
+        if (!envCheck.isValid) {
+            console.error("[ConfigError] Critical environment variables missing or invalid for production:");
+            envCheck.errors.forEach(err => console.error(` - ${err}`));
+            process.exit(1);
+        }
+        if (envCheck.warnings.length > 0 && process.env.NODE_ENV !== "test") {
+            envCheck.warnings.forEach(warn => console.warn(`[Config] ${warn}`));
+        }
+
         await connectDB();
 
         // Safe, idempotent administrative user and baseline verification

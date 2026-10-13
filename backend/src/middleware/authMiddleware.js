@@ -19,7 +19,7 @@ const protect = async (req, res, next) => {
     }
 
     // Check if token was invalidated via logout
-    if (tokenBlacklistService.isTokenInvalidated(token)) {
+    if (await tokenBlacklistService.isTokenInvalidated(token)) {
         return errorResponse(res, 401, "Session has been logged out. Please login again.");
     }
 
@@ -29,6 +29,14 @@ const protect = async (req, res, next) => {
 
         if (!user) {
             return errorResponse(res, 401, "Invalid token. User not found.");
+        }
+
+        // Invalidate sessions issued prior to a password reset
+        if (
+            (decoded.tokenVersion !== undefined && user.tokenVersion !== undefined && decoded.tokenVersion < user.tokenVersion) ||
+            (user.passwordChangedAt && (decoded.iat || 0) * 1000 < user.passwordChangedAt.getTime() - 2000)
+        ) {
+            return errorResponse(res, 401, "Password was changed recently. Please log in again.");
         }
 
         // Verify user account status

@@ -20,9 +20,9 @@ const getJwtSecret = () => {
 /**
  * Generate JWT token for user
  */
-const generateToken = (userId, role) => {
+const generateToken = (userId, role, tokenVersion = 0) => {
     return jwt.sign(
-        { id: userId, role, jti: `${Date.now()}_${Math.random().toString(36).substring(2, 9)}` },
+        { id: userId, role, tokenVersion, jti: `${Date.now()}_${Math.random().toString(36).substring(2, 9)}` },
         getJwtSecret(),
         { expiresIn: process.env.JWT_EXPIRES_IN || "24h" }
     );
@@ -119,7 +119,7 @@ const login = async (req, res, next) => {
         // Reset failed login counter on successful authentication
         resetFailedLogin(normalizedEmail);
 
-        const token = generateToken(user._id, user.role);
+        const token = generateToken(user._id, user.role, user.tokenVersion || 0);
 
         return successResponse(res, 200, "Login successful", {
             token,
@@ -409,6 +409,8 @@ const resetPassword = async (req, res, next) => {
         const hashedPassword = await passwordService.hashPassword(newPassword);
         user.password = hashedPassword;
         user.$locals.isPreHashed = true;
+        user.tokenVersion = (user.tokenVersion || 0) + 1;
+        user.passwordChangedAt = new Date();
         user.resetPasswordTokenHash = null;
         user.resetPasswordExpires = null;
         await user.save();
@@ -462,7 +464,7 @@ const logout = async (req, res) => {
         }
 
         if (token) {
-            tokenBlacklistService.invalidateToken(token);
+            await tokenBlacklistService.invalidateToken(token);
         }
 
         return successResponse(res, 200, "Logout successful");

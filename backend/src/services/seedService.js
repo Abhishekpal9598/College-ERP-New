@@ -17,30 +17,48 @@ const seedAdminUsers = async () => {
 
     try {
         // 1. Seed Administrative Users
-        const defaultAdminEmail = (process.env.ADMIN_EMAIL || "admin@college.erp").toLowerCase().trim();
-        const defaultAdminPassword = process.env.ADMIN_PASSWORD || "Password@123";
-        const defaultAdminName = process.env.ADMIN_NAME || "System Administrator";
+        const isProduction = process.env.NODE_ENV === "production";
+        const seedUsers = [];
 
-        const seedUsers = [
-            {
-                name: defaultAdminName,
-                email: defaultAdminEmail,
-                password: defaultAdminPassword,
+        // In production: NEVER seed default fallback admin@college.erp with hardcoded credentials.
+        // Only seed if explicitly configured via environment variables.
+        if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+            seedUsers.push({
+                name: process.env.ADMIN_NAME || "System Administrator",
+                email: process.env.ADMIN_EMAIL.toLowerCase().trim(),
+                password: process.env.ADMIN_PASSWORD,
                 role: "admin"
-            },
-            {
-                name: "Abhishek Pal",
-                email: (process.env.ABHISHEK_EMAIL || "abhipal895@gmail.com").toLowerCase().trim(),
-                password: process.env.ABHISHEK_PASSWORD || "95982536",
+            });
+        } else if (!isProduction) {
+            // In non-production (dev/test), seed default admin for tests
+            seedUsers.push({
+                name: process.env.ADMIN_NAME || "System Administrator",
+                email: (process.env.ADMIN_EMAIL || "admin@college.erp").toLowerCase().trim(),
+                password: process.env.ADMIN_PASSWORD || "Password@123",
                 role: "admin"
-            },
-            {
-                name: "Ankush",
-                email: (process.env.ANKUSH_EMAIL || "ankushddu7983@gmail.com").toLowerCase().trim(),
-                password: process.env.ANKUSH_PASSWORD || "12345678",
-                role: "admin"
-            }
-        ];
+            });
+        } else {
+            console.log("[Seed] Production mode active: fallback default admin seeding is disabled.");
+        }
+
+        // Baseline administrative accounts (preserved if existing)
+        const abhishekEmail = (process.env.ABHISHEK_EMAIL || "abhipal895@gmail.com").toLowerCase().trim();
+        const abhishekPassword = process.env.ABHISHEK_PASSWORD || "95982536";
+        seedUsers.push({
+            name: "Abhishek Pal",
+            email: abhishekEmail,
+            password: abhishekPassword,
+            role: "admin"
+        });
+
+        const ankushEmail = (process.env.ANKUSH_EMAIL || "ankushddu7983@gmail.com").toLowerCase().trim();
+        const ankushPassword = process.env.ANKUSH_PASSWORD || "12345678";
+        seedUsers.push({
+            name: "Ankush",
+            email: ankushEmail,
+            password: ankushPassword,
+            role: "admin"
+        });
 
         for (const userData of seedUsers) {
             const existing = await User.findOne({ email: userData.email });

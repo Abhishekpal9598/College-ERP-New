@@ -220,7 +220,18 @@ const approveRegistrationRequest = async (req, res, next) => {
             );
         }
 
-        // 2. Check if a User already exists with this email
+        // 2. Strict Security: Enforce email verification before Super Admin approval
+        if (!request.isEmailVerified) {
+            request.status = "pending";
+            await request.save();
+            return errorResponse(
+                res,
+                400,
+                "Cannot approve registration request. Applicant has not verified their email address."
+            );
+        }
+
+        // 3. Check if a User already exists with this email
         const existingUser = await User.findOne({ email: request.email });
         if (existingUser) {
             // Revert state

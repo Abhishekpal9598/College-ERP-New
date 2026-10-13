@@ -73,6 +73,14 @@ const userSchema = new mongoose.Schema(
         approvedAt: {
             type: Date,
             default: null
+        },
+        passwordChangedAt: {
+            type: Date,
+            default: null
+        },
+        tokenVersion: {
+            type: Number,
+            default: 0
         }
     },
     {
