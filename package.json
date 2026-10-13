@@ -6,7 +6,7 @@
     "start": "node backend/src/server.js",
     "dev:backend": "node backend/src/server.js",
     "dev:frontend": "node frontend/dev-server.js",
-    "test": "node tests/unit/test_units.js && node tests/backend/test_backend.js && node tests/security/test_security_hardening.js && node tests/security/test_security_audit.js && node tests/frontend/test_routes.js && node tests/integration/test_production_integration.js && node tests/integration/test_admin_registration.js && node tests/security/test_production_hardening.js && node tests/security/test_frontend_auth_flow.js && node tests/security/test_auth_audit_regression.js",
+    "test": "node tests/unit/test_units.js && node tests/backend/test_backend.js && node tests/security/test_security_hardening.js && node tests/security/test_security_audit.js && node tests/frontend/test_routes.js && node tests/integration/test_production_integration.js && node tests/integration/test_admin_registration.js && node tests/security/test_production_hardening.js && node tests/security/test_frontend_auth_flow.js && node tests/security/test_auth_audit_regression.js && node tests/security/test_direct_url_auth.js",
     "test:unit": "node tests/unit/test_units.js",
     "test:backend": "node tests/backend/test_backend.js",
     "test:security": "node tests/security/test_security_hardening.js",
@@ -17,7 +17,8 @@
     "test:prod-integration": "node tests/integration/test_production_integration.js",
     "test:frontend": "node tests/frontend/test_routes.js",
     "test:auth-flow": "node tests/security/test_frontend_auth_flow.js",
-    "test:audit-regression": "node tests/security/test_auth_audit_regression.js"
+    "test:audit-regression": "node tests/security/test_auth_audit_regression.js",
+    "test:direct-url": "node tests/security/test_direct_url_auth.js"
   },
   "keywords": [
     "college-erp",
