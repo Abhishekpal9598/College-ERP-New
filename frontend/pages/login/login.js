@@ -1,21 +1,11 @@
 console.log("College ERP Login Loaded");
 
 // =========================
-// Session Verification
-// Unauthenticated users always see the login form.
-// Existing sessions are verified with the backend before any redirect.
+// Login Page Initialization
+// Login page always displays the login form directly.
+// No automatic redirect to Dashboard from the login form.
 // =========================
-if (typeof hasValidToken === "function" && hasValidToken()) {
-    if (typeof verifySession === "function") {
-        verifySession().then(result => {
-            if (result && result.authenticated) {
-                window.location.replace("/pages/dashboard/dashboard.html");
-            } else {
-                if (typeof clearAuthState === "function") clearAuthState();
-            }
-        });
-    }
-} else {
+if (typeof hasValidToken === "function" && !hasValidToken()) {
     if (typeof clearAuthState === "function") {
         clearAuthState();
     }

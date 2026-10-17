@@ -298,7 +298,7 @@ async function runTestSuite() {
     );
 
     // -------------------------------------------------------------
-    // TEST 11: Landing page (index.html) verifies session & contains no hardcoded bypass
+    // TEST 11: Landing page (index.html) redirects directly to login and contains no dashboard bypass
     // -------------------------------------------------------------
     const indexFiles = [
         path.join(__dirname, "../../frontend/index.html"),
@@ -309,30 +309,30 @@ async function runTestSuite() {
     let allIndexFilesSecure = true;
     for (const f of indexFiles) {
         const c = fs.readFileSync(f, "utf-8");
-        // Must contain hasValidToken and verifySession, and must not have `isLoggedIn ? "/pages/dashboard`
-        if (!c.includes("hasValidToken") || !c.includes("verifySession") || c.includes('targetPage = isLoggedIn ? "/pages/dashboard/dashboard.html"')) {
+        // Must redirect directly to login.html and not automatically redirect to dashboard
+        if (!c.includes("/pages/login/login.html") || c.includes("/pages/dashboard/dashboard.html")) {
             allIndexFilesSecure = false;
         }
     }
 
     assert(
         allIndexFilesSecure,
-        "All landing pages (index.html) verify sessions via verifySession() and contain zero bypasses",
+        "All landing pages (index.html) redirect directly to login page with zero automatic dashboard bypass",
         "Verified across frontend/index.html, frontend/public/index.html, and root index.html"
     );
 
     // -------------------------------------------------------------
-    // TEST 12: Login page (login.js) removes synchronous redirect based on localStorage
+    // TEST 12: Login page (login.js) always displays login form without automatic dashboard redirect
     // -------------------------------------------------------------
     const loginJsPath = path.join(__dirname, "../../frontend/pages/login/login.js");
     const loginJsContent = fs.readFileSync(loginJsPath, "utf-8");
-    const hasSyncBypass = loginJsContent.includes('if (typeof isAuthenticated === "function" && isAuthenticated()) {\n    window.location.href = "/pages/dashboard/dashboard.html";\n}');
-    const hasAsyncVerify = loginJsContent.includes("verifySession().then");
+    const hasSyncBypass = loginJsContent.includes('window.location.href = "/pages/dashboard/dashboard.html";\n}');
+    const hasAutoRedirect = loginJsContent.includes("verifySession().then");
 
     assert(
-        !hasSyncBypass && hasAsyncVerify,
-        "Login page always shows login form and redirects only after async backend verification",
-        `Synchronous bypass removed: ${!hasSyncBypass}, Async verification present: ${hasAsyncVerify}`
+        !hasSyncBypass && !hasAutoRedirect,
+        "Login page always shows login form and does not automatically redirect to Dashboard",
+        `Synchronous bypass removed: ${!hasSyncBypass}, Automatic redirect to dashboard removed: ${!hasAutoRedirect}`
     );
 
     console.log("\n================================================================================");

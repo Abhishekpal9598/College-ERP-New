@@ -283,6 +283,50 @@ async function runDirectUrlTests() {
         );
     }
 
+    // -------------------------------------------------------------------------
+    // TEST 5: Root URL & Login Page Behavior (Opens Login Page Directly)
+    // -------------------------------------------------------------------------
+    console.log("\n>>> [TEST 5] Root URL & Login Page Entry Behavior");
+    {
+        const fs = require("fs");
+        const path = require("path");
+
+        const vercelJson = JSON.parse(fs.readFileSync(path.join(__dirname, "../../frontend/vercel.json"), "utf8"));
+        const rootRewrite = vercelJson.rewrites.find(r => r.source === "/");
+
+        logCheck(
+            "[TEST 5] Vercel rewrites root URL '/' directly to login page",
+            rootRewrite && rootRewrite.destination === "/pages/login/login.html",
+            `Root rewrite destination: ${rootRewrite?.destination}`
+        );
+
+        const devServerCode = fs.readFileSync(path.join(__dirname, "../../frontend/dev-server.js"), "utf8");
+        logCheck(
+            "[TEST 5] Dev server rewrites root URL '/' directly to login page",
+            devServerCode.includes("'/': '/pages/login/login.html'"),
+            "dev-server.js root route maps to /pages/login/login.html"
+        );
+
+        const indexHtml = fs.readFileSync(path.join(__dirname, "../../frontend/index.html"), "utf8");
+        const hasDirectLoginRedirect = indexHtml.includes('window.location.replace("/pages/login/login.html")');
+        const hasAutoDashboardRedirect = indexHtml.includes("/pages/dashboard/dashboard.html");
+        const hasIntermediateText = indexHtml.includes("Verifying session with secure server");
+
+        logCheck(
+            "[TEST 5] index.html redirects directly to login with zero dashboard auto-redirect and zero verification screen",
+            hasDirectLoginRedirect && !hasAutoDashboardRedirect && !hasIntermediateText,
+            `directLoginRedirect: ${hasDirectLoginRedirect}, autoDashboardRedirect: ${hasAutoDashboardRedirect}, intermediateText: ${hasIntermediateText}`
+        );
+
+        const loginJs = fs.readFileSync(path.join(__dirname, "../../frontend/pages/login/login.js"), "utf8");
+        const loginHasAutoDashboardRedirect = loginJs.includes("verifySession().then");
+        logCheck(
+            "[TEST 5] login.js displays login form without automatic dashboard redirect",
+            !loginHasAutoDashboardRedirect,
+            `Automatic redirect in login.js: ${loginHasAutoDashboardRedirect}`
+        );
+    }
+
     console.log("\n================================================================================");
     console.log(`  DIRECT URL AUTHENTICATION SUITE RESULTS: ${checksPassed}/${checksPassed + checksFailed} PASSED (${((checksPassed / (checksPassed + checksFailed)) * 100).toFixed(1)}%)`);
     console.log("================================================================================\n");

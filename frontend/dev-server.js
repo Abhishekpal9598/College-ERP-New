@@ -16,7 +16,7 @@ const MIME_TYPES = {
 };
 
 const ROUTE_REWRITES = {
-    '/': '/index.html',
+    '/': '/pages/login/login.html',
     '/login': '/pages/login/login.html',
     '/register': '/pages/register/register.html',
     '/register/register.html': '/pages/register/register.html',
