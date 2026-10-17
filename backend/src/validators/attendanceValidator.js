@@ -39,7 +39,44 @@ const updateAttendanceValidation = [
         .isLength({ max: 255 }).withMessage("Remarks cannot exceed 255 characters")
 ];
 
+const recordTeacherAttendanceValidation = [
+    // Support either single record or batch
+    body("teacher")
+        .if(body("batch").not().exists())
+        .notEmpty().withMessage("Teacher ID is required")
+        .isMongoId().withMessage("Invalid teacher MongoDB ID"),
+    body("date")
+        .if(body("batch").not().exists())
+        .notEmpty().withMessage("Date is required")
+        .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage("Date must be in YYYY-MM-DD format"),
+    body("status")
+        .if(body("batch").not().exists())
+        .notEmpty().withMessage("Status is required")
+        .isIn(["present", "absent", "leave"]).withMessage("Status must be present, absent, or leave"),
+    body("batch")
+        .optional()
+        .isArray({ min: 1 }).withMessage("Batch must be a non-empty array of attendance entries"),
+    body("remarks")
+        .optional()
+        .trim()
+        .isLength({ max: 255 }).withMessage("Remarks cannot exceed 255 characters")
+];
+
+const updateTeacherAttendanceValidation = [
+    param("id")
+        .isMongoId().withMessage("Invalid teacher attendance ID format"),
+    body("status")
+        .optional()
+        .isIn(["present", "absent", "leave"]).withMessage("Status must be present, absent, or leave"),
+    body("remarks")
+        .optional()
+        .trim()
+        .isLength({ max: 255 }).withMessage("Remarks cannot exceed 255 characters")
+];
+
 module.exports = {
     recordAttendanceValidation,
-    updateAttendanceValidation
+    updateAttendanceValidation,
+    recordTeacherAttendanceValidation,
+    updateTeacherAttendanceValidation
 };

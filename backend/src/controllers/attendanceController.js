@@ -1,6 +1,9 @@
 const Attendance = require("../models/Attendance");
 const Student = require("../models/Student");
+const Teacher = require("../models/Teacher");
+const TeacherAttendance = require("../models/TeacherAttendance");
 const { successResponse, errorResponse } = require("../utils/apiResponse");
+
 
 /**
  * @desc    Get attendance records with filtering
@@ -9,6 +12,10 @@ const { successResponse, errorResponse } = require("../utils/apiResponse");
  */
 const getAttendance = async (req, res, next) => {
     try {
+        if (req.query.userType === "teacher" || req.query.type === "teacher") {
+            return getTeacherAttendance(req, res, next);
+        }
+
         const { date, subject, semester, section, status, student } = req.query;
 
         const query = {};
@@ -37,7 +44,12 @@ const getAttendance = async (req, res, next) => {
  */
 const recordAttendance = async (req, res, next) => {
     try {
+        if (req.body.teacher || (Array.isArray(req.body.batch) && req.body.batch[0] && req.body.batch[0].teacher)) {
+            return recordTeacherAttendance(req, res, next);
+        }
+
         const { student, date, status, subject, semester, section, remarks, batch } = req.body;
+
 
         // Batch attendance recording support
         if (Array.isArray(batch) && batch.length > 0) {
@@ -171,9 +183,175 @@ const getStudentAttendance = async (req, res, next) => {
     }
 };
 
+/**
+ * @desc    Get teacher attendance records with filtering
+ * @route   GET /api/attendance/teachers
+ * @access  Private
+ */
+const getTeacherAttendance = async (req, res, next) => {
+    try {
+        const { date, teacher, status } = req.query;
+
+        const query = {};
+
+        if (date) query.date = date;
+        if (teacher) query.teacher = teacher;
+        if (status) query.status = status;
+
+        const records = await TeacherAttendance.find(query)
+            .populate("teacher", "firstName lastName teacherId department subject email phone")
+            .sort({ date: -1 });
+
+        return successResponse(res, 200, "Teacher attendance records fetched successfully", records);
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * @desc    Record teacher attendance (single or batch with atomic upsert)
+ * @route   POST /api/attendance/teachers
+ * @access  Private
+ */
+const recordTeacherAttendance = async (req, res, next) => {
+    try {
+        const { teacher, date, status, remarks, batch } = req.body;
+
+        // Batch attendance recording support with atomic upsert
+        if (Array.isArray(batch) && batch.length > 0) {
+            for (const item of batch) {
+                if (!item.teacher || !item.date || !item.status) {
+                    return errorResponse(res, 400, "Teacher, date, and status are required for each batch item.");
+                }
+                if (!["present", "absent", "leave"].includes(item.status)) {
+                    return errorResponse(res, 400, "Status must be present, absent, or leave.");
+                }
+            }
+
+            const operations = batch.map(item => ({
+                updateOne: {
+                    filter: {
+                        teacher: item.teacher,
+                        date: item.date
+                    },
+                    update: {
+                        $set: {
+                            status: item.status,
+                            remarks: item.remarks || ""
+                        }
+                    },
+                    upsert: true
+                }
+            }));
+
+            const bulkResult = await TeacherAttendance.bulkWrite(operations);
+            return successResponse(res, 201, "Teacher batch attendance saved successfully", bulkResult);
+        }
+
+        // Single attendance recording
+        if (!teacher || !date || !status) {
+            return errorResponse(res, 400, "Teacher, date, and status are required.");
+        }
+
+        if (!["present", "absent", "leave"].includes(status)) {
+            return errorResponse(res, 400, "Status must be present, absent, or leave.");
+        }
+
+        const teacherExists = await Teacher.findById(teacher);
+        if (!teacherExists) {
+            return errorResponse(res, 404, "Teacher not found.");
+        }
+
+        // Atomic upsert: updates existing record or creates a new one
+        const record = await TeacherAttendance.findOneAndUpdate(
+            { teacher, date },
+            { $set: { status, remarks: remarks || "" } },
+            { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+        ).populate("teacher", "firstName lastName teacherId department subject");
+
+        return successResponse(res, 201, "Teacher attendance recorded successfully", record);
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * @desc    Update single teacher attendance record
+ * @route   PUT /api/attendance/teachers/record/:id
+ * @access  Private
+ */
+const updateTeacherAttendance = async (req, res, next) => {
+    try {
+        const record = await TeacherAttendance.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        ).populate("teacher", "firstName lastName teacherId department subject");
+
+        if (!record) {
+            return errorResponse(res, 404, "Teacher attendance record not found");
+        }
+
+        return successResponse(res, 200, "Teacher attendance updated successfully", record);
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * @desc    Get attendance history & stats for a specific teacher
+ * @route   GET /api/attendance/teachers/:teacherId
+ * @access  Private
+ */
+const getSingleTeacherAttendanceHistory = async (req, res, next) => {
+    try {
+        const { teacherId } = req.params;
+
+        const teacher = await Teacher.findById(teacherId);
+        if (!teacher) {
+            return errorResponse(res, 404, "Teacher not found");
+        }
+
+        const records = await TeacherAttendance.find({ teacher: teacherId }).sort({ date: -1 });
+
+        const totalDays = records.length;
+        const presentCount = records.filter(r => r.status === "present").length;
+        const absentCount = records.filter(r => r.status === "absent").length;
+        const leaveCount = records.filter(r => r.status === "leave").length;
+
+        const attendancePercentage = totalDays > 0
+            ? Number(((presentCount / totalDays) * 100).toFixed(2))
+            : 0;
+
+        return successResponse(res, 200, "Teacher attendance retrieved successfully", {
+            teacher: {
+                id: teacher._id,
+                name: teacher.fullName,
+                teacherId: teacher.teacherId,
+                department: teacher.department,
+                subject: teacher.subject
+            },
+            summary: {
+                totalDays,
+                presentCount,
+                absentCount,
+                leaveCount,
+                attendancePercentage
+            },
+            records
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     getAttendance,
     recordAttendance,
     updateAttendance,
-    getStudentAttendance
+    getStudentAttendance,
+    getTeacherAttendance,
+    recordTeacherAttendance,
+    updateTeacherAttendance,
+    getSingleTeacherAttendanceHistory
 };

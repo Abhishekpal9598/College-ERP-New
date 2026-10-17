@@ -7,6 +7,7 @@ console.log("Attendance Management Loaded");
 let studentsList = [];
 let teachersList = [];
 let attendanceRecords = [];
+let teacherAttendanceRecords = [];
 
 const studentTab = document.getElementById("studentTab");
 const teacherTab = document.getElementById("teacherTab");
@@ -37,6 +38,7 @@ if (teacherDate) teacherDate.value = today;
 // Tab Switch
 if (studentTab && teacherTab) {
     studentTab.addEventListener("click", function () {
+        sessionStorage.setItem("activeAttendanceTab", "student");
         studentTab.classList.add("active");
         teacherTab.classList.remove("active");
         if (studentSection) studentSection.classList.remove("hidden");
@@ -45,6 +47,7 @@ if (studentTab && teacherTab) {
     });
 
     teacherTab.addEventListener("click", function () {
+        sessionStorage.setItem("activeAttendanceTab", "teacher");
         teacherTab.classList.add("active");
         studentTab.classList.remove("active");
         if (studentSection) studentSection.classList.add("hidden");
@@ -211,18 +214,45 @@ if (studentSearch) {
 // TEACHER ATTENDANCE
 // =======================================
 
+if (teacherDate) {
+    teacherDate.addEventListener("change", loadTeachersAndAttendance);
+}
+
+if (teacherSearch) {
+    teacherSearch.addEventListener("input", function () {
+        const term = teacherSearch.value.toLowerCase().trim();
+        const filtered = teachersList.filter(t => {
+            const name = (t.fullName || `${t.firstName} ${t.lastName}`).toLowerCase();
+            const id = (t.teacherId || "").toLowerCase();
+            const dept = (t.department || "").toLowerCase();
+            const subj = (t.subject || "").toLowerCase();
+            return name.includes(term) || id.includes(term) || dept.includes(term) || subj.includes(term);
+        });
+        renderTeachersAttendanceTable(filtered);
+    });
+}
+
 async function loadTeachersAndAttendance() {
     if (!teacherTable) return;
-    teacherTable.innerHTML = `<tr><td colspan="5">Loading teachers from database...</td></tr>`;
+    teacherTable.innerHTML = `<tr><td colspan="5">Loading teachers and attendance from database...</td></tr>`;
 
     try {
-        const response = await teacherAPI.getTeachers({ limit: 100 });
-        if (response && response.success) {
-            teachersList = response.data;
-            renderTeachersAttendanceTable(teachersList);
+        const date = teacherDate ? teacherDate.value : today;
+
+        const [teachersRes, attRes] = await Promise.all([
+            teacherAPI.getTeachers({ limit: 100 }),
+            attendanceAPI.getTeacherAttendance({ date })
+        ]);
+
+        if (teachersRes && teachersRes.success) {
+            teachersList = teachersRes.data;
         }
-    } catch {
-        teacherTable.innerHTML = `<tr><td colspan="5" style="color:red;">Error loading teachers.</td></tr>`;
+
+        teacherAttendanceRecords = (attRes && attRes.success && Array.isArray(attRes.data)) ? attRes.data : [];
+
+        renderTeachersAttendanceTable(teachersList);
+    } catch (err) {
+        teacherTable.innerHTML = `<tr><td colspan="5" style="color:red;">Error loading teachers and attendance from backend.</td></tr>`;
     }
 }
 
@@ -230,37 +260,133 @@ function renderTeachersAttendanceTable(list) {
     if (!teacherTable) return;
     teacherTable.innerHTML = "";
 
+    if (!list || list.length === 0) {
+        teacherTable.innerHTML = `<tr><td colspan="5">No teachers found.</td></tr>`;
+        return;
+    }
+
+    const date = teacherDate ? teacherDate.value : today;
+
     list.forEach((t, i) => {
+        const teacherDbId = t._id || t.id;
+        const savedRecord = teacherAttendanceRecords.find(r => {
+            const rTeacherId = r.teacher ? (r.teacher._id || r.teacher.id || r.teacher) : "";
+            return (String(rTeacherId) === String(teacherDbId)) && r.date === date;
+        });
+
+        const savedStatus = savedRecord ? savedRecord.status : "";
+
         const row = document.createElement("tr");
+        row.dataset.teacherId = teacherDbId;
+
         row.innerHTML = `
             <td>${i + 1}</td>
             <td>${t.fullName || `${t.firstName} ${t.lastName}`}</td>
-            <td>${t.teacherId}</td>
-            <td>${t.subject}</td>
+            <td>${t.teacherId || "-"}</td>
+            <td>${t.subject || "-"}</td>
             <td>
                 <div class="status-box">
-                    <button type="button" class="status-btn present-btn selected">Present</button>
-                    <button type="button" class="status-btn absent-btn">Absent</button>
+                    <button type="button" class="status-btn present-btn ${savedStatus === 'present' ? 'selected' : ''}">Present</button>
+                    <button type="button" class="status-btn absent-btn ${savedStatus === 'absent' ? 'selected' : ''}">Absent</button>
+                    <button type="button" class="status-btn leave-btn ${savedStatus === 'leave' ? 'selected' : ''}">Leave</button>
                 </div>
             </td>
         `;
+
         const p = row.querySelector(".present-btn");
         const a = row.querySelector(".absent-btn");
-        p.onclick = () => { p.classList.add("selected"); a.classList.remove("selected"); };
-        a.onclick = () => { a.classList.add("selected"); p.classList.remove("selected"); };
+        const l = row.querySelector(".leave-btn");
+
+        p.addEventListener("click", () => {
+            p.classList.add("selected");
+            a.classList.remove("selected");
+            l.classList.remove("selected");
+        });
+        a.addEventListener("click", () => {
+            a.classList.add("selected");
+            p.classList.remove("selected");
+            l.classList.remove("selected");
+        });
+        l.addEventListener("click", () => {
+            l.classList.add("selected");
+            p.classList.remove("selected");
+            a.classList.remove("selected");
+        });
+
         teacherTable.appendChild(row);
     });
 }
 
 if (saveTeacherBtn) {
-    saveTeacherBtn.addEventListener("click", function () {
-        alert("Teacher attendance recorded successfully!");
+    saveTeacherBtn.addEventListener("click", async function () {
+        const date = teacherDate ? teacherDate.value : today;
+        const rows = teacherTable ? teacherTable.querySelectorAll("tr") : [];
+
+        const batch = [];
+
+        rows.forEach(row => {
+            const teacherId = row.dataset.teacherId;
+            if (!teacherId) return;
+
+            const presentBtn = row.querySelector(".present-btn");
+            const absentBtn = row.querySelector(".absent-btn");
+            const leaveBtn = row.querySelector(".leave-btn");
+
+            let status = "";
+            if (presentBtn && presentBtn.classList.contains("selected")) status = "present";
+            else if (absentBtn && absentBtn.classList.contains("selected")) status = "absent";
+            else if (leaveBtn && leaveBtn.classList.contains("selected")) status = "leave";
+
+            if (status) {
+                batch.push({
+                    teacher: teacherId,
+                    date,
+                    status
+                });
+            }
+        });
+
+        if (batch.length === 0) {
+            alert("Please select Present, Absent, or Leave for at least one teacher.");
+            return;
+        }
+
+        saveTeacherBtn.disabled = true;
+        saveTeacherBtn.textContent = "💾 Saving to MongoDB...";
+
+        try {
+            const response = await attendanceAPI.recordTeacherAttendance({ batch });
+            if (response && response.success) {
+                alert(`Teacher attendance saved for ${batch.length} teacher(s) to MongoDB!`);
+                await loadTeachersAndAttendance();
+            } else {
+                alert(response.message || "Failed to save teacher attendance.");
+            }
+        } catch (err) {
+            alert("Error saving teacher attendance to backend: " + (err.message || "Network error"));
+        } finally {
+            saveTeacherBtn.disabled = false;
+            saveTeacherBtn.textContent = "💾 Save Teacher Attendance";
+        }
     });
 }
 
 // Initial Load strictly gated on session verification
 if (typeof requireAuth === "function") {
     requireAuth().then(authenticated => {
-        if (authenticated) loadStudentsAndAttendance();
+        if (authenticated) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get("tab") || sessionStorage.getItem("activeAttendanceTab") || "student";
+
+            if (activeTab === "teacher") {
+                if (studentTab) studentTab.classList.remove("active");
+                if (teacherTab) teacherTab.classList.add("active");
+                if (studentSection) studentSection.classList.add("hidden");
+                if (teacherSection) teacherSection.classList.remove("hidden");
+                loadTeachersAndAttendance();
+            } else {
+                loadStudentsAndAttendance();
+            }
+        }
     });
 }

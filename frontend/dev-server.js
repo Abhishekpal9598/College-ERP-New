@@ -26,6 +26,7 @@ const ROUTE_REWRITES = {
     '/students': '/pages/students/students.html',
     '/teachers': '/pages/teachers/teachers.html',
     '/attendance': '/pages/attendance/attendance.html',
+    '/teacher-attendance': '/pages/attendance/attendance.html',
     '/fees': '/pages/fees/fees.html',
     '/results': '/pages/results/results.html',
     '/settings': '/pages/settings/settings.html',

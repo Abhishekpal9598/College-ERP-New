@@ -251,6 +251,25 @@ const attendanceAPI = {
     },
     getStudentAttendance: async (studentId) => {
         return apiFetch(`/attendance/student/${studentId}`);
+    },
+    getTeacherAttendance: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        return apiFetch(`/attendance/teachers${query ? `?${query}` : ""}`);
+    },
+    recordTeacherAttendance: async (attendanceData) => {
+        return apiFetch("/attendance/teachers", {
+            method: "POST",
+            body: JSON.stringify(attendanceData)
+        });
+    },
+    updateTeacherAttendance: async (id, attendanceData) => {
+        return apiFetch(`/attendance/teachers/record/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(attendanceData)
+        });
+    },
+    getSingleTeacherAttendance: async (teacherId) => {
+        return apiFetch(`/attendance/teachers/${teacherId}`);
     }
 };
 

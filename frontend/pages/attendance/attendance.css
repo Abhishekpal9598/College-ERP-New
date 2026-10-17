@@ -399,8 +399,24 @@ STATUS BUTTONS
 
  color: white;
 
+}
+
+.leave-btn {
+
+ background: #fef3c7;
+
+ color: #b45309;
 
 }
+
+.leave-btn.selected {
+
+ background: #d97706;
+
+ color: white;
+
+}
+
 
 /* ===========================
 SAVE BUTTON
